@@ -6,7 +6,7 @@ public abstract class Shooting : MonoBehaviour
     [Header("Shoot Settings")]
     [SerializeField]protected float coolDown;
     [SerializeField]protected float startcoolDown;
-    [SerializeField]protected float damage;
+    [SerializeField]internal int damage;
     [SerializeField]internal float maxDistance;
     [SerializeField]internal float bulletSpeed;
     [SerializeField]protected GameObject prefab;

@@ -13,7 +13,7 @@ public abstract class HealthCharcters : MonoBehaviour
     public event Action DeadReaction;
 
     float timeDamage = 0;
-    protected void DealDamage(HealthCharcters target, int damage)
+    internal void DealDamage(HealthCharcters target, int damage)
     {
         if (Time.time - timeDamage >= noDamageState && health)
         {

@@ -4,14 +4,10 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - DungeManagerEnable
-  - ShopTrigger
   - DeathScreen
-  - Destroyable
-  - cycki
-  - GrapplePoint
-  - NotDestroyable
   - RoomEntrance
+  - Enemy
+  - Bullet
   layers:
   - Default
   - TransparentFX
