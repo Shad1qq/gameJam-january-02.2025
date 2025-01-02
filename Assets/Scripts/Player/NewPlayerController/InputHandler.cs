@@ -11,12 +11,14 @@ namespace SA
         bool x_input;
         bool y_input;
 
-        bool rb_input;//инпут клавиатуры
-        float rt_axis;//инпут телефона\джостика
+        bool rb_input;
         bool rt_input;
         bool lb_input;
-        float lt_axis;
         bool lt_input;
+
+        float b_timer;
+        float rt_timer;
+        float lt_timer;
 
         StatManager states;
         CameraManager camManager;
@@ -25,31 +27,39 @@ namespace SA
 
         void Start()
         {
-            camManager = CameraManager.singleton;
-            camManager.Init(this.transform);
+            Application.targetFrameRate = 60;
 
             states = GetComponent<StatManager>();
+            
+            camManager = CameraManager.singleton;
+            camManager.Init(states);
+
             states.Init();
         }
-        public void GetInput()
+
+        void GetInputUp()
+        {
+            if(!y_input)
+                y_input = Input.GetKeyUp(KeyCode.F);
+        }
+        void GetInput()
         {
             horizontal = Input.GetAxis("Horizontal");
             vertical = Input.GetAxis("Vertical");
-            b_input = Input.GetButton("B");
-            a_input = Input.GetButton("A");
-            y_input = Input.GetButtonUp("Y");//эту залупу
-            x_input = Input.GetButton("X");
-            rt_input = Input.GetButton("RT");
-            rt_axis = Input.GetAxis("RT");//настроить эту хуету в инпутах проекта
-            if (rt_axis != 0)
-                rt_input = true;
 
+            b_input = Input.GetKey(KeyCode.LeftShift);
+            a_input = Input.GetKey(KeyCode.Q);
+            x_input = Input.GetKey(KeyCode.R);//айтемы юзаем типа хилинга
+
+            rt_input = Input.GetButton("RT");
             lt_input = Input.GetButton("LT");
-            lt_axis = Input.GetAxis("LT");//и гдето ще залупа которую надо вынести в апдейт тк с фиксир обновлением они плохо робят 
-            if (lt_axis != 0)
-                lt_input = true;
             rb_input = Input.GetButton("RB");
-            lb_input = Input.GetButton("LB");//обрабатываем ввод если хочеш сделать новую систему или управление с мобилы тебе здесь копатся
+            lb_input = Input.GetButton("LB");
+
+            if (b_input)
+                b_timer += delta;
+            else
+                b_timer = 0;
         }
 
         private void FixedUpdate()
@@ -58,10 +68,13 @@ namespace SA
             UpdateStates();
             states.FixedTick(delta);
             camManager.Tick(delta);
+            ResetInputNState();
         }
         private void Update()
         {
-            delta = Time.fixedDeltaTime;//кешируем эту парашу для оптимизации я так понял 
+            GetInputUp();
+
+            delta = Time.fixedDeltaTime;
             states.Tick(delta);
         }
         void UpdateStates()
@@ -71,14 +84,56 @@ namespace SA
 
             Vector3 v = vertical * camManager.transform.forward;
             Vector3 h = horizontal * camManager.transform.right;
-            states.moveDir = (v + h).normalized;//воо ограниченый вод а мову эмоунт это ввод относительно локальных кординат 
+            states.moveDir = (v + h).normalized;
             float m = Mathf.Abs(horizontal) + Mathf.Abs(vertical);
-            states.moveAmount = Mathf.Clamp01(m);//вот мув эмоунт это ввод на передвижение ограниченый единицей или че не ясно
+            states.moveAmount = Mathf.Clamp01(m);
 
+            if (x_input)//вырубим бег если мы хилимся
+                b_input = false;
+            if (b_input && b_timer > 0.5f)//если держим кнопку долго то бежим если не долго то делаем рывок 
+                states.run = (states.moveAmount > 0.2f);
+            else
+                states.run = false;//бег
+
+            if (b_input && b_timer > 0 && b_timer < 0.5f)
+                states.rollInput = true;//рывок
+
+            states.itemInput = x_input;
             states.rb = rb_input;
             states.rt = rt_input;
             states.lb = lb_input;
-            states.lt = lt_input;//и тут их обнулять после всех операций
-        }//в завис от ввода тут вызываем методы из стат менеджера например можно добавить состояние деша
+            states.lt = lt_input;
+
+            if (y_input)
+            {
+                states.isTwoHanded = !states.isTwoHanded;
+                states.HandledTwoHanded();
+                y_input = false;
+            }//смена оружия
+
+            if(states.lockOnTransform != null)
+            {
+            }//состояни еблокировки если заблокированы то чето делаем
+        }
+        private void TargetUpdate()
+        {
+            states.lockOn = !states.lockOn;
+            if (states.lockOnTransform == null)
+                states.lockOn = false;
+
+            camManager.lockOnTransform = states.lockOnTransform;
+            states.lockOnTransform = camManager.lockOnTransform;
+            camManager.lockOn = states.lockOn;
+        }
+        public void TransformUpdateTarget(Transform tr)
+        {
+            states.lockOnTransform = tr;
+            TargetUpdate();
+        }
+        private void ResetInputNState()
+        {
+            if (states.rollInput)
+                states.rollInput = false;
+        }
     }
 }

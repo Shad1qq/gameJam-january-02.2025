@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace SA
 {
@@ -7,57 +6,70 @@ namespace SA
     {
         [Header("Init")]
         public GameObject activModel;
-        
+
         [Header("Inputs")]
         public float vertical;
         public float horizontal;
         public float moveAmount;
         public Vector3 moveDir;
         public bool rt, rb, lt, lb;
+        public bool rollInput;
+        public bool itemInput;
 
         [Header("Stats")]
         public float moveSpeed = 2;
+        public float runSpeed = 3.5f;
         public float rotationSpeed = 5f;
         public float toGround = 0.5f;
+        public float rollSpeed = 1f;
 
         [Header("States")]
         public bool onGround;
+        public bool run;
+        public float endMoveh;
+        public float endMovev;
+        public bool lockOn;
+        public bool inAction;
+        public bool canMove;
+        public bool isTwoHanded;
+        public bool usingItem;
+
+        [Header("Other")]
+        public Transform lockOnTransform;
+        public AnimationCurve roll_curve;
 
         [HideInInspector]
         public Animator anim;
         [HideInInspector]
         public Rigidbody rigid;
+        [HideInInspector]
+        public AnimatorHook a_hook;
 
         [HideInInspector]
         public float delta;
         [HideInInspector]
         public LayerMask ignoreLayer;
 
-        [Header("r������ �� ��������� �����")]
-        [SerializeField] private Material damageMaterial;
-        private Material defoltMaterial;
-        private SkinnedMeshRenderer rend;
-
-        [Header("UI Settings")]
-        [SerializeField] private Slider sliderHealth;
+        float actionDelay = 0;
 
         public void Init()
         {
-            rend = GetComponentInChildren<SkinnedMeshRenderer>();//эта моя залупа все ломала ибо на activModel не было скин рендера
-            defoltMaterial = rend.material;
-
             SetupAnimator();
 
             rigid = GetComponent<Rigidbody>();
             rigid.angularDrag = 999;
             rigid.drag = 4;
-            rigid.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;//настройка риджен боди по дефолту
+            rigid.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
 
-            gameObject.layer = 8;//устанавливаем слой игроку в ручную на всякий пожарный
-            ignoreLayer = ~(0 << 9);//ставим игнорирование слоев детектора земли
+            a_hook = activModel.GetComponent<AnimatorHook>();
+            if (a_hook == null)
+                a_hook = activModel.AddComponent<AnimatorHook>();
+            a_hook.Init(this);
 
-            DamageReaction += DamagePlayer;//моя залупа меняющая материал при всосе урона
-            //anim.SetBool("onGround", true);я закомитил переход в состояние падения тк его у нас нету, это могло создать ошибку, раскомить если понадобится
+            gameObject.layer = 8;
+            ignoreLayer = ~(1 << 9);
+
+            anim.SetBool("onGround", true);
         }
         void SetupAnimator()
         {
@@ -73,43 +85,147 @@ namespace SA
             if (anim == null)
                 anim = activModel.GetComponent<Animator>();
         }
-        
         public void FixedTick(float d)
         {
-            delta = d;//уже известно что это
+            delta = d;
 
-            rigid.drag = (moveAmount > 0 || !onGround) ? 0 : 4;//настройка сопротивления воздуха или чето такое оно влияет на поведение игрока вращает или типо того
-            //если не двигаемся или в воздухе то нулевое сопротивление иначе равно 4
-            float targetSpeed = moveSpeed;//по нейму ясно
+            usingItem = anim.GetBool("interactive");
 
+            DetectAction();
+            HandleRolls();
+
+            if (inAction)
+            {
+                anim.applyRootMotion = true;
+
+                actionDelay += delta;
+                if (actionDelay > 0.5f)
+                {
+                    inAction = false;
+                    actionDelay = 0;
+                }
+                else
+                    return;
+            }
+
+            canMove = anim.GetBool("canMoving");
+
+            if (!canMove)
+                return;
+
+            a_hook.CloseRoll();
+
+            anim.applyRootMotion = false;
+
+            rigid.drag = (moveAmount > 0 || !onGround) ? 0 : 4;
+
+            float targetSpeed = moveSpeed;
+
+            if (usingItem)
+                moveAmount = Mathf.Clamp(moveAmount, 0, 0.7f);
+
+            Vector3 targetDir = (lockOn == false) ? moveDir
+                :
+                (lockOnTransform != null) ?
+                lockOnTransform.position - transform.position : moveDir;
+
+            if (run)
+            {
+                targetDir = moveDir;
+                targetSpeed = runSpeed;
+            }
             if (onGround)
-                rigid.velocity = moveDir * (targetSpeed * moveAmount);//если мы на земле то мы можем ходить
+                rigid.velocity = moveDir * (targetSpeed * moveAmount);
 
-            Vector3 targetDirection = moveDir;
-            targetDirection.y = 0;
-            if (targetDirection == Vector3.zero)
-                targetDirection = transform.forward;
-            Quaternion tr = Quaternion.LookRotation(targetDirection);
+            targetDir.y = 0;
+            if (targetDir == Vector3.zero)
+                targetDir = transform.forward;
+            Quaternion tr = Quaternion.LookRotation(targetDir);
             Quaternion targetRotation = Quaternion.Slerp(transform.rotation, tr, delta * moveAmount * rotationSpeed);
-            transform.rotation = targetRotation;//поворот
+            transform.rotation = targetRotation;
 
-            HandleMovementAnimations();//анимации тригерим
+            anim.SetBool("lockOn", lockOn);
+
+            if (lockOn == false)
+                HandleMovementAnimations();
+            else
+                HandleLockOnAnimations(moveDir);
+        }
+        public void DetectAction()
+        {
+            if (rb == false && rt == false && lb == false && lt == false)
+                return;
+
+            if (canMove == false || usingItem)
+                return;
+
+            string targetAnim = null;
+
+            targetAnim = "1";
+
+            if (string.IsNullOrEmpty(targetAnim))
+                return;
+
+            canMove = false;
+            inAction = true;
+
+            anim.CrossFade(targetAnim, 0.2f);
         }
         public void Tick(float d)
         {
-            delta = d;//всасываем время фикс обновления
-            onGround = OnGround();//проверка на земле ли мы
+            delta = d;
+            onGround = OnGround();
 
-            //anim.SetBool("onGround", onGround); в методе инициализации уже сказал что это за залупа 
+            anim.SetBool("onGround", onGround);
+        }
+        void HandleRolls()
+        {
+            if (!rollInput || usingItem)
+                return;
+
+            float v = vertical;
+            float h = horizontal;
+
+            v = (moveAmount > 0.3f) ? 1 : 0;
+            h = 0;
+
+            if (v != 0)
+            {
+                if (moveDir == Vector3.zero)
+                    moveDir = transform.forward;
+                Quaternion targetRot = Quaternion.LookRotation(moveDir);
+                transform.rotation = targetRot;
+                a_hook.rm_multi = rollSpeed;
+            }
+            else
+                a_hook.rm_multi = -10f;
+
+            anim.SetFloat("vertical", v);
+            anim.SetFloat("horizontal", h);
+
+            canMove = false;
+            inAction = true;
+            anim.Play("Rolls");
+            a_hook.InitForRoll();
         }
         void HandleMovementAnimations()
         {
-            bool mov = false;
-            if (moveAmount != 0)
-                mov = true;
-
-            anim.SetBool("canMove", mov);//крч если движемся то передаем тру в аниматор
+            anim.SetBool("run", run);
+            anim.SetFloat("vertical", moveAmount, 0.2f, delta);
         }
+        void HandleLockOnAnimations(Vector3 moveDir)
+        {
+            Vector3 relativDir = transform.InverseTransformDirection(moveDir);
+
+            float h = relativDir.x;
+            float v = relativDir.z;
+
+            anim.SetFloat("vertical", v, 0.25f, delta);
+            anim.SetFloat("horizontal", h, 0.25f, delta);
+
+            anim.SetBool("run", run);
+        }
+
         public bool OnGround()
         {
             bool r = false;
@@ -120,29 +236,18 @@ namespace SA
 
             RaycastHit hit;
             Debug.DrawRay(origin, dir * dis);
-            if (Physics.Raycast(origin, dir, out hit, dis, ignoreLayer))//рейкастим землю
+            if (Physics.Raycast(origin, dir, out hit, dis, ignoreLayer))
             {
                 r = true;
                 Vector3 targetPosition = hit.point;
-                transform.position = targetPosition;//присасываемся к земле?
+                transform.position = targetPosition;
             }
 
             return r;
         }
-
-        private void DamagePlayer()//моя залупа с материалом работает с хил чарактером
+        public void HandledTwoHanded()
         {
-            if(sliderHealth != null)
-                sliderHealth.value = _maxHealth;//������� �� ��������� ����
-            if(damageMaterial != null)
-            {
-                rend.materials = new Material[] { damageMaterial }; // ������������� ������� ��������
-                Invoke(nameof(RefreshMaterual), 0.2f);
-            }
-        }
-        private void RefreshMaterual()//тоже моя залупа
-        {
-            rend.materials = new Material[] { defoltMaterial }; // ���������� �������� ��������
+            anim.SetBool("twoHanded", isTwoHanded);
         }
     }
 }
