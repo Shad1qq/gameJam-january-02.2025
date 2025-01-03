@@ -7,6 +7,7 @@ public class Pistol : Shooting
     private void Start()
     {
         coolDown = startcoolDown;
+        
     }
     void FixedUpdate()
     {      
@@ -18,6 +19,10 @@ public class Pistol : Shooting
         
             
     }
-    private void Update() => coolDown -= Time.deltaTime;
+    private void Update() 
+    {
+        coolDown -= Time.deltaTime;
+        FireRayCasts();
+    }
 
 }

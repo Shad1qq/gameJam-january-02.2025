@@ -136,7 +136,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2750168383968868482, guid: 338211614e0f191408bc944b42e9c0e5, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 25.199783
+      value: 25.33
       objectReference: {fileID: 0}
     - target: {fileID: 2750168383968868482, guid: 338211614e0f191408bc944b42e9c0e5, type: 3}
       propertyPath: m_LocalPosition.y
@@ -174,6 +174,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3837963559907523637, guid: 338211614e0f191408bc944b42e9c0e5, type: 3}
+      propertyPath: radius
+      value: 6.11
+      objectReference: {fileID: 0}
+    - target: {fileID: 3837963559907523637, guid: 338211614e0f191408bc944b42e9c0e5, type: 3}
+      propertyPath: countRays
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 3837963559907523637, guid: 338211614e0f191408bc944b42e9c0e5, type: 3}
+      propertyPath: numofrays
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 6414934757840408121, guid: 338211614e0f191408bc944b42e9c0e5, type: 3}
       propertyPath: m_Name
       value: controler
@@ -205,7 +217,7 @@ GameObject:
   - component: {fileID: 1035775127}
   - component: {fileID: 1035775126}
   - component: {fileID: 1035775130}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Enemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
