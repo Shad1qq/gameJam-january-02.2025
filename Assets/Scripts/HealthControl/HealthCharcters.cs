@@ -12,6 +12,9 @@ public abstract class HealthCharcters : MonoBehaviour
     public event Action DamageReaction;
     public event Action DeadReaction;
 
+    [HideInInspector]
+    public bool isDead = false;
+
     float timeDamage = 0;
     internal void DealDamage(HealthCharcters target, int damage)
     {
@@ -46,6 +49,7 @@ public abstract class HealthCharcters : MonoBehaviour
     }
     private void Die()
     {
+        isDead = true;
         DeadReaction?.Invoke();
         gameObject.SetActive(false);
         Debug.Log($"{gameObject.name} погиб");

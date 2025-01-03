@@ -17,11 +17,12 @@ namespace SA
         bool lt_input;
 
         float b_timer;
-        float rt_timer;
-        float lt_timer;
+
+        bool rightAxis_down;
 
         StatManager states;
         CameraManager camManager;
+        RagdolController ragControl;
 
         float delta;
 
@@ -35,12 +36,17 @@ namespace SA
             camManager.Init(states);
 
             states.Init();
+
+            ragControl = states.activModel.AddComponent<RagdolController>();
+            ragControl.Init(states.anim);
         }
 
         void GetInputUp()
         {
             if(!y_input)
                 y_input = Input.GetKeyUp(KeyCode.F);
+            if (!rightAxis_down)
+                rightAxis_down = Input.GetKeyUp(KeyCode.X);
         }
         void GetInput()
         {
@@ -49,7 +55,7 @@ namespace SA
 
             b_input = Input.GetKey(KeyCode.LeftShift);
             a_input = Input.GetKey(KeyCode.Q);
-            x_input = Input.GetKey(KeyCode.R);//айтемы юзаем типа хилинга
+            x_input = Input.GetKey(KeyCode.R);
 
             rt_input = Input.GetButton("RT");
             lt_input = Input.GetButton("LT");
@@ -88,8 +94,6 @@ namespace SA
             float m = Mathf.Abs(horizontal) + Mathf.Abs(vertical);
             states.moveAmount = Mathf.Clamp01(m);
 
-            if (x_input)//вырубим бег если мы хилимся
-                b_input = false;
             if (b_input && b_timer > 0.5f)//если держим кнопку долго то бежим если не долго то делаем рывок 
                 states.run = (states.moveAmount > 0.2f);
             else
@@ -98,32 +102,25 @@ namespace SA
             if (b_input && b_timer > 0 && b_timer < 0.5f)
                 states.rollInput = true;//рывок
 
-            states.itemInput = x_input;
             states.rb = rb_input;
             states.rt = rt_input;
             states.lb = lb_input;
             states.lt = lt_input;
 
-            if (y_input)
-            {
-                states.isTwoHanded = !states.isTwoHanded;
-                states.HandledTwoHanded();
-                y_input = false;
-            }//смена оружия
+            if (states.isDead)
+                ragControl.RagdolTrue();
 
-            if(states.lockOnTransform != null)
-            {
-            }//состояни еблокировки если заблокированы то чето делаем
+            if (rightAxis_down)
+                TransformUpdateTarget(states.lockOnTransform);
         }
         private void TargetUpdate()
         {
             states.lockOn = !states.lockOn;
-            if (states.lockOnTransform == null)
-                states.lockOn = false;
 
+            camManager.lockOn = states.lockOn;
             camManager.lockOnTransform = states.lockOnTransform;
             states.lockOnTransform = camManager.lockOnTransform;
-            camManager.lockOn = states.lockOn;
+            rightAxis_down = false;
         }
         public void TransformUpdateTarget(Transform tr)
         {

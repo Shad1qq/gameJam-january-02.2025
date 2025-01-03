@@ -51,6 +51,7 @@ namespace SA
 
             if (states.canMove)
                 return;
+
             delta = states.delta;
 
             rigid.drag = 0;

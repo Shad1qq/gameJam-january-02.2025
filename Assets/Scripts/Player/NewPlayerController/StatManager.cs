@@ -14,14 +14,13 @@ namespace SA
         public Vector3 moveDir;
         public bool rt, rb, lt, lb;
         public bool rollInput;
-        public bool itemInput;
 
         [Header("Stats")]
         public float moveSpeed = 2;
-        public float runSpeed = 3.5f;
+        public float runSpeed = 7f;
         public float rotationSpeed = 5f;
         public float toGround = 0.5f;
-        public float rollSpeed = 1f;
+        public float rollSpeed = 10f;
 
         [Header("States")]
         public bool onGround;
@@ -31,8 +30,6 @@ namespace SA
         public bool lockOn;
         public bool inAction;
         public bool canMove;
-        public bool isTwoHanded;
-        public bool usingItem;
 
         [Header("Other")]
         public Transform lockOnTransform;
@@ -89,8 +86,6 @@ namespace SA
         {
             delta = d;
 
-            usingItem = anim.GetBool("interactive");
-
             DetectAction();
             HandleRolls();
 
@@ -120,9 +115,6 @@ namespace SA
             rigid.drag = (moveAmount > 0 || !onGround) ? 0 : 4;
 
             float targetSpeed = moveSpeed;
-
-            if (usingItem)
-                moveAmount = Mathf.Clamp(moveAmount, 0, 0.7f);
 
             Vector3 targetDir = (lockOn == false) ? moveDir
                 :
@@ -156,11 +148,9 @@ namespace SA
             if (rb == false && rt == false && lb == false && lt == false)
                 return;
 
-            if (canMove == false || usingItem)
-                return;
-
             string targetAnim = null;
 
+            //подписываем анимации атаки если над
             targetAnim = "1";
 
             if (string.IsNullOrEmpty(targetAnim))
@@ -180,7 +170,7 @@ namespace SA
         }
         void HandleRolls()
         {
-            if (!rollInput || usingItem)
+            if (!rollInput)
                 return;
 
             float v = vertical;
@@ -198,7 +188,7 @@ namespace SA
                 a_hook.rm_multi = rollSpeed;
             }
             else
-                a_hook.rm_multi = -10f;
+                a_hook.rm_multi = -5f;
 
             anim.SetFloat("vertical", v);
             anim.SetFloat("horizontal", h);
@@ -244,10 +234,6 @@ namespace SA
             }
 
             return r;
-        }
-        public void HandledTwoHanded()
-        {
-            anim.SetBool("twoHanded", isTwoHanded);
         }
     }
 }
