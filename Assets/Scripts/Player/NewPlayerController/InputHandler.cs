@@ -8,7 +8,7 @@ namespace SA
         float vertical;
         bool b_input;
         bool a_input;
-        bool x_input;
+        bool r_input;
         bool y_input;
         bool space_input;
 
@@ -26,6 +26,8 @@ namespace SA
         RagdolController ragControl;
 
         float delta;
+
+        bool r_inputs;
 
         void Start()
         {
@@ -56,7 +58,7 @@ namespace SA
 
             b_input = Input.GetKey(KeyCode.LeftShift);
             a_input = Input.GetKey(KeyCode.Q);
-            x_input = Input.GetKey(KeyCode.R);
+            r_input = Input.GetKey(KeyCode.R);
 
             rt_input = Input.GetButton("RT");
             lt_input = Input.GetButton("LT");
@@ -103,11 +105,6 @@ namespace SA
             float m = Mathf.Abs(horizontal) + Mathf.Abs(vertical);
             states.moveAmount = Mathf.Clamp01(m);
 
-            if (b_input && b_timer > 0.5f)//если держим кнопку долго то бежим если не долго то делаем рывок 
-                states.run = (states.moveAmount > 0.2f);
-            else
-                states.run = false;//бег
-
             if (b_input && b_timer > 0 && b_timer < 0.5f)
                 states.rollInput = true;//рывок
 
@@ -117,6 +114,15 @@ namespace SA
             states.lt = lt_input;
 
             states.jampingInput = space_input;
+
+            if (r_input)
+            {
+                if(r_inputs)
+                    states.run = !states.run;
+                r_inputs = false;
+            }
+            else
+                r_inputs = true;
 
             if (rightAxis_down)
                 TransformUpdateTarget(states.lockOnTransform);
