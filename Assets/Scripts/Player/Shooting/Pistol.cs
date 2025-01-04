@@ -1,28 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 public class Pistol : Shooting
 {
-    private void Start()
+    internal bool shot;
+
+    private void Awake()
     {
         coolDown = startcoolDown;
-        
     }
-    void FixedUpdate()
-    {      
-        if(Input.GetKey(KeyCode.Mouse0) && coolDown <= 0f)
-        {
-            Shoot();
-            coolDown = startcoolDown;
-        }
-        
-            
-    }
-    private void Update() 
+    public void FixUpdate()
     {
-        coolDown -= Time.deltaTime;
         FireRayCasts();
-    }
 
+        if (!shot || coolDown > 0)
+            return;
+
+        Shoot();
+        coolDown = startcoolDown;
+    }
 }

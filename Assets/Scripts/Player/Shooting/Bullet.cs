@@ -1,7 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using SA;
 using UnityEngine;
 
 public class Bullet : MonoBehaviour
@@ -35,14 +33,10 @@ public class Bullet : MonoBehaviour
 
         }
         if (currentCollider != null) 
-        {
             GetComponent<Rigidbody>().transform.position = Vector3.Lerp(transform.position, currentCollider.transform.position, shootClass.bulletSpeed * Time.deltaTime);
-        }
         else
-        {
             Destroy(gameObject);
-        }
-             
+
         if (Vector3.Distance(transform.position, shootClass.gameObject.transform.position) >= shootClass.maxDistance)
         {
             Destroy(gameObject);
@@ -50,6 +44,7 @@ public class Bullet : MonoBehaviour
     }
     private void OnCollisionEnter(Collision collision)
     {
-        Destroy(gameObject);
+        if (collision.gameObject.layer != 8)
+            Destroy(gameObject);
     }
 }

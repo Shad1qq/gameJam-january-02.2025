@@ -17,6 +17,8 @@ namespace SA
         bool lb_input;
         bool lt_input;
 
+        bool shotMouse;
+
         float b_timer;
 
         bool rightAxis_down;
@@ -24,6 +26,7 @@ namespace SA
         StatManager states;
         CameraManager camManager;
         RagdolController ragControl;
+        Pistol pis;
 
         float delta;
 
@@ -42,6 +45,12 @@ namespace SA
 
             ragControl = states.activModel.AddComponent<RagdolController>();
             ragControl.Init(states.anim);
+
+            pis = GetComponent<Pistol>();
+            if(pis == null)
+                pis = gameObject.AddComponent<Pistol>();
+
+            states.run = !states.run;
         }
 
         void GetInputUp()
@@ -65,6 +74,8 @@ namespace SA
             rb_input = Input.GetButton("RB");
             lb_input = Input.GetButton("LB");
 
+            shotMouse = Input.GetKey(KeyCode.Mouse0);
+
             space_input = Input.GetKey(KeyCode.Space);
 
             if (b_input)
@@ -79,6 +90,7 @@ namespace SA
             UpdateStates();
             states.FixedTick(delta);
             camManager.Tick(delta);
+            pis.FixUpdate();
             ResetInputNState();
         }
         private void Update()
@@ -114,6 +126,9 @@ namespace SA
             states.lt = lt_input;
 
             states.jampingInput = space_input;
+
+            pis.shot = shotMouse;
+            pis.coolDown -= delta;
 
             if (r_input)
             {
