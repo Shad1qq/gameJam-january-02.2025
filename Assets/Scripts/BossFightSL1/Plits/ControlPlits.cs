@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class ControlPlits : MonoBehaviour
 {
-    [SerializeField] private float _speed = 1f;
+    [SerializeField] private float timePos = 1f;
     [SerializeField] private float distance = 1f;
 
     internal Color blueColor = Color.blue;
@@ -35,28 +35,28 @@ public class ControlPlits : MonoBehaviour
         bool x = (bool)parameters[1];
 
         Material[] material = new Material[c.Length];
-        float[] t = new float[c.Length];
-        Color[] color = new Color[c.Length];
+        Color color;
         Color targetColor = (x) ? blueColor : redColor;
+        float progress = 0;
 
         for(int i = 0; i < c.Length; i++)
-        {
             material[i] = plits[c[i]].GetComponent<Renderer>().material;
-            color[i] = material[i].color;
-        }
+        color = material[0].color;
         yield return new WaitForSeconds(0.05f);
 
         while (true)
         {
+            progress += Time.deltaTime / transitionTime;
+
             for (int i = 0; i < c.Length; i++)
             {
-                t[i] += Time.deltaTime / transitionTime;
-                Color lerpedColor = Color.Lerp(color[i], targetColor, t[i]);
-                Color lerpedColorWithAlpha = new(lerpedColor.r, lerpedColor.g, lerpedColor.b);
+                Color lerpedColor = Color.Lerp(color, targetColor, progress);
+                Color lerpedColorWithAlpha = new(lerpedColor.r, lerpedColor.g, lerpedColor.b, material[i].color.a);
                 material[i].color = lerpedColorWithAlpha;
             }
+            color = material[0].color;
 
-            if (color[0] == targetColor)
+            if (color == targetColor)
                 break;
 
             yield return new WaitForSeconds(0.05f);
@@ -73,27 +73,47 @@ public class ControlPlits : MonoBehaviour
         bool x = (bool)parameters[1];
 
         Transform[] position = new Transform[c.Length];
+        Material[] material = new Material[c.Length];
+
         Vector3[] startPosition = new Vector3[c.Length];
         Vector3[] targetPosition = new Vector3[c.Length];
         float progress = 0;
 
+        float targetDis;
+        float lerpedAlpha;
+
+        if (x)
+            targetDis = distance;
+        else
+            targetDis = -distance;
+
         for (int i = 0; i < c.Length; i++)
         {
             position[i] = plits[c[i]].transform;
-            targetPosition[i] = position[i].position + new Vector3(0f, (x)? -distance : distance, 0f);
+            targetPosition[i] = position[i].position + new Vector3(0f, targetDis, 0f);
             startPosition[i] = position[i].position;
+            material[i] = plits[c[i]].GetComponent<Renderer>().material;
         }
         yield return new WaitForSeconds(0.05f);
 
         while (progress < 1)
         {
-            progress += Time.deltaTime * _speed;
+            progress += Time.deltaTime / timePos;
 
             for (int i = 0; i < c.Length; i++)
             {
                 position[i].position = Vector3.Lerp(startPosition[i], targetPosition[i], progress);
+
+                if(x)
+                    lerpedAlpha = Mathf.Lerp(endAlpha, startAlpha, progress);
+                else
+                    lerpedAlpha = Mathf.Lerp(startAlpha, endAlpha, progress);
+
+                material[i].color = new Color(material[i].color.r, material[i].color.g, material[i].color.b, lerpedAlpha);
             }
             yield return new WaitForSeconds(0.05f);
         }
+        foreach (var i in position)
+            i.gameObject.SetActive(false);
     }
 }
