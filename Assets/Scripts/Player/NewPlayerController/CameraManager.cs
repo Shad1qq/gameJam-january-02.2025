@@ -11,9 +11,7 @@ namespace SA
         public Transform target;
         public Transform lockOnTransform;
 
-        [HideInInspector]
         public Transform pivot;
-        [HideInInspector]
         public Transform camTrans;
         StatManager states;
 

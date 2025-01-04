@@ -10,6 +10,7 @@ namespace SA
         bool a_input;
         bool x_input;
         bool y_input;
+        bool space_input;
 
         bool rb_input;
         bool rt_input;
@@ -62,6 +63,8 @@ namespace SA
             rb_input = Input.GetButton("RB");
             lb_input = Input.GetButton("LB");
 
+            space_input = Input.GetKey(KeyCode.Space);
+
             if (b_input)
                 b_timer += delta;
             else
@@ -85,6 +88,12 @@ namespace SA
         }
         void UpdateStates()
         {
+            if (states.isDead)
+            {
+                ragControl.RagdolTrue();
+                return;
+            }
+
             states.horizontal = horizontal;
             states.vertical = vertical;
 
@@ -107,8 +116,7 @@ namespace SA
             states.lb = lb_input;
             states.lt = lt_input;
 
-            if (states.isDead)
-                ragControl.RagdolTrue();
+            states.jampingInput = space_input;
 
             if (rightAxis_down)
                 TransformUpdateTarget(states.lockOnTransform);

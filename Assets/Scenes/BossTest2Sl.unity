@@ -667,6 +667,10 @@ PrefabInstance:
       value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 6842039153102389359, guid: 338211614e0f191408bc944b42e9c0e5, type: 3}
+      propertyPath: jumpForce
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6842039153102389359, guid: 338211614e0f191408bc944b42e9c0e5, type: 3}
       propertyPath: moveSpeed
       value: 5
       objectReference: {fileID: 0}
@@ -1765,7 +1769,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 4b12698b308bc8a468677359b503acb4, type: 2}
+  - {fileID: 2100000, guid: 206dc7d975874a948a8c29356e1dd40c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2207,14 +2211,14 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 7739613695892816807, guid: 510d2262c90a4f947af6827e6c744963, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 2015584972}
+      addedObject: {fileID: 2015584974}
   m_SourcePrefab: {fileID: 100100000, guid: 510d2262c90a4f947af6827e6c744963, type: 3}
 --- !u!1 &2015584969 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7739613695892816807, guid: 510d2262c90a4f947af6827e6c744963, type: 3}
   m_PrefabInstance: {fileID: 2015584968}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2015584972
+--- !u!114 &2015584974
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

@@ -1,3 +1,4 @@
+using System.Security;
 using UnityEngine;
 
 namespace SA
@@ -8,12 +9,13 @@ namespace SA
         public GameObject activModel;
 
         [Header("Inputs")]
-        public float vertical;
-        public float horizontal;
-        public float moveAmount;
-        public Vector3 moveDir;
-        public bool rt, rb, lt, lb;
-        public bool rollInput;
+        internal float vertical;
+        internal float horizontal;
+        internal float moveAmount;
+        internal Vector3 moveDir;
+        internal bool rt, rb, lt, lb;
+        internal bool rollInput;
+        internal bool jampingInput;
 
         [Header("Stats")]
         public float moveSpeed = 2;
@@ -21,31 +23,29 @@ namespace SA
         public float rotationSpeed = 5f;
         public float toGround = 0.5f;
         public float rollSpeed = 10f;
+        public float jumpForce = 5f;
 
         [Header("States")]
-        public bool onGround;
-        public bool run;
-        public float endMoveh;
-        public float endMovev;
-        public bool lockOn;
-        public bool inAction;
-        public bool canMove;
+        internal bool onGround;
+        internal bool run;
+        internal float endMoveh;
+        internal float endMovev;
+        internal bool lockOn;
+        internal bool inAction;
+        internal bool canMove;
+        internal bool jumping;
+        float jumTimer = 0f;
 
         [Header("Other")]
         public Transform lockOnTransform;
         public AnimationCurve roll_curve;
 
-        [HideInInspector]
-        public Animator anim;
-        [HideInInspector]
-        public Rigidbody rigid;
-        [HideInInspector]
-        public AnimatorHook a_hook;
+        internal Animator anim;
+        internal Rigidbody rigid;
+        internal AnimatorHook a_hook;
 
-        [HideInInspector]
-        public float delta;
-        [HideInInspector]
-        public LayerMask ignoreLayer;
+        internal float delta;
+        internal LayerMask ignoreLayer;
 
         float actionDelay = 0;
 
@@ -86,6 +86,7 @@ namespace SA
         {
             delta = d;
 
+            Jamping();
             DetectAction();
             HandleRolls();
 
@@ -94,13 +95,24 @@ namespace SA
                 anim.applyRootMotion = true;
 
                 actionDelay += delta;
-                if (actionDelay > 0.5f)
+                if (actionDelay > 0.3f)
                 {
                     inAction = false;
                     actionDelay = 0;
                 }
                 else
                     return;
+            }
+
+            if (jumping)
+            {
+                if (jumTimer > 0.3f)
+                {
+                    jumTimer = 0f;
+                    jumping = false;
+                }
+                else
+                    jumTimer += delta;
             }
 
             canMove = anim.GetBool("canMoving");
@@ -148,6 +160,9 @@ namespace SA
             if (rb == false && rt == false && lb == false && lt == false)
                 return;
 
+            if (!canMove || !onGround)
+                return;
+
             string targetAnim = null;
 
             //подписываем анимации атаки если над
@@ -164,13 +179,18 @@ namespace SA
         public void Tick(float d)
         {
             delta = d;
-            onGround = OnGround();
+
+            if(!jumping)
+                onGround = OnGround();
 
             anim.SetBool("onGround", onGround);
         }
         void HandleRolls()
         {
-            if (!rollInput)
+            if (!rollInput || jumping || !onGround)
+                return;
+
+            if (!canMove)
                 return;
 
             float v = vertical;
@@ -195,9 +215,29 @@ namespace SA
 
             canMove = false;
             inAction = true;
+
             anim.Play("Rolls");
             a_hook.InitForRoll();
         }
+        void Jamping()
+        {
+            if (!jampingInput || jumping)
+                return;
+
+            if (!canMove)
+                return;
+
+            if (!onGround)
+                return;
+
+            rigid.velocity = new Vector3(rigid.velocity.x, jumpForce, rigid.velocity.z);
+
+            jumping = true;
+            onGround = false;
+
+            anim.Play("Jump");
+        }
+
         void HandleMovementAnimations()
         {
             anim.SetBool("run", run);
