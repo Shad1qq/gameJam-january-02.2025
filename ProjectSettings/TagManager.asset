@@ -8,11 +8,12 @@ TagManager:
   - RoomEntrance
   - Enemy
   - Bullet
+  - Destroyable
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - TransparentOOO
   - Water
   - UI
   - Tilemap

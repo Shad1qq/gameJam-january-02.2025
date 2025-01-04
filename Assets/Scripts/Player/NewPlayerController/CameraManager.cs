@@ -4,20 +4,18 @@ namespace SA
 {
     public class CameraManager : MonoBehaviour
     {
-        public bool lockOn;//блокировка камеры чето типо захвата цели 
-
+        public bool lockOn;
         public float follofSpeed = 9f;
         public float mouseSpeed = 2f;
-        public float controllerSpeed = 7f;
 
-        public Transform target;//то за чем мы следим, чтобы следить не за игроком а за всей сценой прийдется добавить сюда еще переменную и отредактировать состояние блокировка
+        public Transform target;
+        public Transform lockOnTransform;
 
-        [HideInInspector]
         public Transform pivot;
-        [HideInInspector]
         public Transform camTrans;
+        StatManager states;
 
-        float turnSmoothing = .1f;
+        readonly float turnSmoothing = .1f;
         public float minAngle = -35f;
         public float maxAngle = 35f;
 
@@ -29,30 +27,23 @@ namespace SA
         public float lookAngle;
         public float tillAngle;
 
-        public void Init(Transform t)
-        {
-            target = t;//лутаем игрока
+        bool usedRigthAxis;
 
-            camTrans = Camera.main.transform;//лутаем камеру
-            pivot = camTrans.parent;//лутаем пивот крч юзаем этот обжект для смещения камеры
+        public void Init(StatManager st)
+        {
+            states = st;
+            target = st.transform;
+
+            camTrans = Camera.main.transform;
+            pivot = camTrans.parent;
         }
 
         public void Tick(float d)
         {
             float h = Input.GetAxis("Mouse X");
-            float v = 0; //Input.GetAxis("Mouse Y")
-
-            float c_h = 0; //Input.GetAxis("RigthAxis X") хуета не настрона 
-            float c_v = 0; //Input.GetAxis("RigthAxis Y") избавился от вертикального ввода закомитил старую обработку ввода оставил только по иксу с мыши но можно добавить и по игрику 
+            float v = Input.GetAxis("Mouse Y");
 
             float targetSpeed = mouseSpeed;
-
-            if (c_h != 0 || c_h != 0)
-            {
-                h = c_h;
-                v = c_v;
-                targetSpeed = controllerSpeed;
-            }// убеждаемся что ввод с разных устройств будет работать одинакого тк на джостиках ты можеш нажать не на условную единиццу а в 0.5 силы
 
             FollovTarget(d);
             HandleRotation(d, v, h, targetSpeed);
@@ -61,7 +52,7 @@ namespace SA
         {
             float speed = d * follofSpeed;
             Vector3 targetPosition = Vector3.Lerp(transform.position, target.position, speed);
-            transform.position = targetPosition;//двигаемся с игроком в унисон поход
+            transform.position = targetPosition;
         }
         void HandleRotation(float d, float v, float h, float targetSpeed)
         {
@@ -69,30 +60,39 @@ namespace SA
             {
                 smothX = Mathf.SmoothDamp(smothX, h, ref smothXvelocity, turnSmoothing);
                 smothY = Mathf.SmoothDamp(smothY, v, ref smothYvelocity, turnSmoothing);
-            }//углы хуелера какието для вычисления поворота
+            }
             else
             {
                 smothX = h;
                 smothY = v;
             }
 
-            if (lockOn)
-            {
-
-            }//менять поведение в зависимости от параметра(это состояние блокировки оставил на будущее но там придумаем как его редакнуть)
-
-            lookAngle += smothX * targetSpeed;
-            transform.rotation = Quaternion.Euler(0, lookAngle, 0);//поворот 
-
             tillAngle -= smothY * targetSpeed;
             tillAngle = Mathf.Clamp(tillAngle, minAngle, maxAngle);
-            pivot.localRotation = Quaternion.Euler(tillAngle, 0, 0);//ага пивот и этот поворачиваем збс аа понял по пивоту кордината у повороот а по контролеру х
-        }
+            pivot.localRotation = Quaternion.Euler(tillAngle, 0, 0);
 
+            if (lockOn && lockOnTransform != null)
+            {
+                Vector3 targetDir = lockOnTransform.position - transform.position;
+                targetDir.Normalize();
+
+                if (targetDir == Vector3.zero)
+                    targetDir = transform.forward;
+                Quaternion targetRoot = Quaternion.LookRotation(targetDir);
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRoot, d * 9);
+                lookAngle = transform.eulerAngles.y;
+
+                return;
+            }
+
+            lookAngle += smothX * targetSpeed;
+            transform.rotation = Quaternion.Euler(0, lookAngle, 0);
+        }
         public static CameraManager singleton;
+
         void Awake()
         {
             singleton = this;
-        }//сбрасываем камеру если в сцене неск камер то будут баги поэт сбрасываем
+        }
     }
 }

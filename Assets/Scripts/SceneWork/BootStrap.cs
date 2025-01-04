@@ -13,7 +13,6 @@ public class BootStrap : MonoBehaviour
     [SerializeField] private TextMeshProUGUI text;
     [SerializeField] private Slider slider;
     [SerializeField] private Button button;
-    
 
     AsyncOperation aOper;
     private void Awake()
@@ -29,6 +28,7 @@ public class BootStrap : MonoBehaviour
     {          
         aOper = SceneManager.LoadSceneAsync(1);
         aOper.allowSceneActivation = false;
+
         while (!aOper.isDone)
         {
             _loadScreens.Show(loadPanel);
@@ -39,7 +39,7 @@ public class BootStrap : MonoBehaviour
             {
                 text.text = "Load Is Completed!";
                 button.enabled = true;
-                
+                break;
             }
             yield return null;
         }
