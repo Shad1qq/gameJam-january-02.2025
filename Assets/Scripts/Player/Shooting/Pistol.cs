@@ -11,7 +11,7 @@ public class Pistol : Shooting
     }
     void FixedUpdate()
     {      
-        if(Input.GetKeyDown(KeyCode.Mouse0) && coolDown <= 0f)
+        if(Input.GetKey(KeyCode.Mouse0) && coolDown <= 0f)
         {
             Shoot();
             coolDown = startcoolDown;

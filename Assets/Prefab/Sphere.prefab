@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5958096606370279118}
   - component: {fileID: 9159965225423291931}
   - component: {fileID: -499507489465286664}
-  - component: {fileID: 7699263914667000013}
+  - component: {fileID: 2820781789204683819}
   m_Layer: 0
   m_Name: Sphere
   m_TagString: Bullet
@@ -119,8 +119,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61730d4f482dacc42b042949811875bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shootClass: {fileID: 0}
---- !u!54 &7699263914667000013
+--- !u!54 &2820781789204683819
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -142,7 +141,7 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0

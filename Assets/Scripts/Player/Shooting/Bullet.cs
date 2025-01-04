@@ -5,7 +5,7 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     internal static Shooting shootClass;
-    
+    Collider currentCollider;
     private void Start()
     {
         shootClass = FindObjectOfType<Shooting>();
@@ -14,12 +14,19 @@ public class Bullet : MonoBehaviour
 
     private void Update()
     {
-        
-        if (shootClass.hitColliders.Length > 0) 
+        foreach (Collider collider in shootClass.hitColliders)
         {
-            GetComponent<Rigidbody>().transform.Translate(new Vector3(0, shootClass.angle) * shootClass.bulletSpeed);
+            currentCollider = collider;         
         }
-        else GetComponent<Rigidbody>().transform.Translate(Vector3.forward * shootClass.bulletSpeed);
+        if (currentCollider != null) 
+        {
+            GetComponent<Rigidbody>().transform.position = Vector3.Lerp(transform.position, currentCollider.transform.position, shootClass.bulletSpeed * Time.deltaTime);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+             
         if (Vector3.Distance(transform.position, shootClass.gameObject.transform.position) >= shootClass.maxDistance)
         {
             Destroy(gameObject);

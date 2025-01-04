@@ -15,7 +15,7 @@ public abstract class Shooting : MonoBehaviour
     [SerializeField]protected GameObject prefab;
     [SerializeField]protected Transform firePoint;
     [SerializeField] protected float radius;
-    internal float angle;
+    internal Vector3 targetPos;
     internal Collider[] hitColliders;
 
     protected virtual void Shoot()
@@ -24,20 +24,7 @@ public abstract class Shooting : MonoBehaviour
     }
     protected virtual void FireRayCasts()
     {
-        hitColliders = Physics.OverlapSphere(transform.position, radius, 1<<7);
-        
-        foreach (Collider collider in hitColliders) 
-        {
-            Vector3 targetPos = collider.transform.position;
-            targetPos.y = transform.position.y;
-
-            Vector3 targetDir = targetPos - transform.position;
-
-            angle = Vector3.Angle(transform.position, targetDir);
-
-            
-        }
-        
+        hitColliders = Physics.OverlapSphere(transform.position, radius, 1<<7); 
     }
 
     private void OnDrawGizmos()

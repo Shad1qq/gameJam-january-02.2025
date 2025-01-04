@@ -176,7 +176,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3837963559907523637, guid: 338211614e0f191408bc944b42e9c0e5, type: 3}
       propertyPath: radius
-      value: 6.11
+      value: 15.41
       objectReference: {fileID: 0}
     - target: {fileID: 3837963559907523637, guid: 338211614e0f191408bc944b42e9c0e5, type: 3}
       propertyPath: countRays
@@ -186,6 +186,14 @@ PrefabInstance:
       propertyPath: numofrays
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 3837963559907523637, guid: 338211614e0f191408bc944b42e9c0e5, type: 3}
+      propertyPath: bulletSpeed
+      value: 3.12
+      objectReference: {fileID: 0}
+    - target: {fileID: 3837963559907523637, guid: 338211614e0f191408bc944b42e9c0e5, type: 3}
+      propertyPath: maxDistance
+      value: 40
+      objectReference: {fileID: 0}
     - target: {fileID: 6414934757840408121, guid: 338211614e0f191408bc944b42e9c0e5, type: 3}
       propertyPath: m_Name
       value: controler
@@ -194,7 +202,8 @@ PrefabInstance:
       propertyPath: noDamageState
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1476060810904572492, guid: 338211614e0f191408bc944b42e9c0e5, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

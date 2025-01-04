@@ -31,6 +31,8 @@ namespace SA
 
         public void Init(StatManager st)
         {
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
             states = st;
             target = st.transform;
 
