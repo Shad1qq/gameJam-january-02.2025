@@ -138,8 +138,12 @@ namespace SA
                 targetDir = moveDir;
                 targetSpeed = runSpeed;
             }
-            if (onGround)
-                rigid.velocity = moveDir * (targetSpeed * moveAmount);
+
+            Vector3 speeds;
+            speeds = moveDir * (targetSpeed * moveAmount);
+            if (!onGround)
+                speeds.y = rigid.velocity.y;
+            rigid.velocity = speeds;
 
             targetDir.y = 0;
             if (targetDir == Vector3.zero)
