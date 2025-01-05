@@ -8,10 +8,10 @@ public class Pistol : Shooting
     }
     public void FixUpdate()
     {
-        FireRayCasts();
-
         if (!shot || coolDown > 0)
             return;
+
+        FireRayCasts();
 
         Shoot();
         coolDown = startcoolDown;
