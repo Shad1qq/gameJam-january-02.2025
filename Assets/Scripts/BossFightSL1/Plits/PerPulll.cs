@@ -1,3 +1,5 @@
+using SA;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,7 +18,9 @@ public class PerPulll : MonoBehaviour
 
     SphereCollider playCol;
 
-    float yAr;
+    public event Action arenaTry;
+
+    public float yAr = 4f;
 
     public float radius = 8f;
     void Start()
@@ -34,14 +38,19 @@ public class PerPulll : MonoBehaviour
         q.pull = this;
 
         var tr = arenaPlitPoint.transform;
-        yAr = tr.position.y;
 
         StartCoroutine(UpdatePlit());
     }
     private void OnTriggerEnter(Collider other)
     {
         if(other.gameObject.layer == 8)
+        {
+            arenaTry?.Invoke();
+
+            StopAllCoroutines();
+            plit.StopAllCoroutines();
             StartCoroutine(Del());
+        }
     }
     IEnumerator Del()
     {

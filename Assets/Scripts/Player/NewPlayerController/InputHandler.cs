@@ -24,7 +24,7 @@ namespace SA
         bool rightAxis_down;
 
         StatManager states;
-        CameraManager camManager;
+        internal CameraManager camManager;
         RagdolController ragControl;
         Pistol pis;
 
@@ -138,23 +138,11 @@ namespace SA
             }
             else
                 r_inputs = true;
-
-            if (rightAxis_down)
-                TransformUpdateTarget(states.lockOnTransform);
-        }
-        private void TargetUpdate()
-        {
-            states.lockOn = !states.lockOn;
-
-            camManager.lockOn = states.lockOn;
-            camManager.lockOnTransform = states.lockOnTransform;
-            states.lockOnTransform = camManager.lockOnTransform;
-            rightAxis_down = false;
         }
         public void TransformUpdateTarget(Transform tr)
         {
             states.lockOnTransform = tr;
-            TargetUpdate();
+            states.lockOn = true;
         }
         private void ResetInputNState()
         {

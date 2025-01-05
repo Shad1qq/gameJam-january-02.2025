@@ -13,7 +13,6 @@ namespace SA
 
         public Transform pivot;
         public Transform camTrans;
-        StatManager states;
 
         readonly float turnSmoothing = .1f;
         public float minAngle = -35f;
@@ -27,13 +26,12 @@ namespace SA
         public float lookAngle;
         public float tillAngle;
 
-        bool usedRigthAxis;
+        public bool vert;
 
         public void Init(StatManager st)
         {
             Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;
-            states = st;
             target = st.transform;
 
             camTrans = Camera.main.transform;
@@ -69,9 +67,12 @@ namespace SA
                 smothY = v;
             }
 
-            tillAngle -= smothY * targetSpeed;
-            tillAngle = Mathf.Clamp(tillAngle, minAngle, maxAngle);
-            pivot.localRotation = Quaternion.Euler(tillAngle, 0, 0);
+            if (!vert)
+            {
+                tillAngle -= smothY * targetSpeed;
+                tillAngle = Mathf.Clamp(tillAngle, minAngle, maxAngle);
+                pivot.localRotation = Quaternion.Euler(tillAngle, 0, 0);
+            }
 
             if (lockOn && lockOnTransform != null)
             {
@@ -81,7 +82,7 @@ namespace SA
                 if (targetDir == Vector3.zero)
                     targetDir = transform.forward;
                 Quaternion targetRoot = Quaternion.LookRotation(targetDir);
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRoot, d * 9);
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRoot, d * 7);
                 lookAngle = transform.eulerAngles.y;
 
                 return;
