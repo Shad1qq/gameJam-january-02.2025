@@ -9,6 +9,7 @@ TagManager:
   - Enemy
   - Bullet
   - Destroyable
+  - Plit
   layers:
   - Default
   - TransparentFX

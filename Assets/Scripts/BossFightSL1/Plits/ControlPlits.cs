@@ -1,119 +1,84 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class ControlPlits : MonoBehaviour
 {
     [SerializeField] private float timePos = 1f;
-    [SerializeField] private float distance = 1f;
+    [SerializeField] private Vector3 distance = new(0, 1f, 0);
 
-    internal Color blueColor = Color.blue;
-    internal Color redColor = Color.red;
+    internal Color blueColor = new(0, 0, 1, 1);
+    internal Color redColor = new(1, 0, 0, 1);
+    internal Color standartColor = new(1, 1, 1, 1);
+
     public float startAlpha = 1f;
     public float endAlpha = 0f;
-    public float transitionTime = 1.4f;
+    public float transitionTime = 0.6f;
 
-    internal GameObject[] plits;
+    internal List<GameObject> buferPlit = new();
 
-    public void Init()
+    public void UpdateColorPlits(GameObject c, bool ver = false)
     {
-        plits = new GameObject[transform.childCount];
-
-        int i = 0;
-        foreach (Transform t in transform)
-        {
-            plits[i++] = t.gameObject;
-        }
+        var startCol = (ver) ? redColor : standartColor;
+        var endColor = (ver) ? blueColor : redColor;
+        StartCoroutine(FadeBlock(c, startCol, endColor, transitionTime));
     }
-    public void UpdateColorPlits(int[] c, bool b = false)
+    public void UpdatePositionPlits(GameObject c, bool Ver = false)
     {
-        StartCoroutine(nameof(UpdatePlitsColor), new object[] { c, b });
+        Vector3 target = c.transform.position + (Ver ? distance : -distance);
+        StartCoroutine(UpdatePlitsPosition(c, c.transform.position, target, transitionTime, (Ver) ? endAlpha : startAlpha, (Ver) ? startAlpha : endAlpha, (Ver) ? false : true));
     }
-    private IEnumerator UpdatePlitsColor(object value)
+    IEnumerator FadeBlock(GameObject block, Color startColor, Color endColor, float duration)
     {
-        object[] parameters = value as object[];
-        int[] c = parameters[0] as int[];
-        bool x = (bool)parameters[1];
+        float time = 0f;
+        Renderer renderer = block.GetComponent<Renderer>();
 
-        Material[] material = new Material[c.Length];
-        Color color;
-        Color targetColor = (x) ? blueColor : redColor;
-        float progress = 0;
-
-        for(int i = 0; i < c.Length; i++)
-            material[i] = plits[c[i]].GetComponent<Renderer>().material;
-        color = material[0].color;
-        yield return new WaitForSeconds(0.05f);
-
-        while (true)
+        while (time < duration)
         {
-            progress += Time.deltaTime / transitionTime;
-
-            for (int i = 0; i < c.Length; i++)
-            {
-                Color lerpedColor = Color.Lerp(color, targetColor, progress);
-                Color lerpedColorWithAlpha = new(lerpedColor.r, lerpedColor.g, lerpedColor.b, material[i].color.a);
-                material[i].color = lerpedColorWithAlpha;
-            }
-            color = material[0].color;
-
-            if (color == targetColor)
-                break;
-
+            renderer.material.color = Color.Lerp(startColor, endColor, time / duration);
+            time += Time.deltaTime;
             yield return new WaitForSeconds(0.05f);
         }
-    }
-    public void UpdatePositionPlits(int[] c, bool b = false)
-    {
-        StartCoroutine(nameof(UpdatePlitsPosition), new object[] { c, b });
-    }
-    private IEnumerator UpdatePlitsPosition(object value)
-    {
-        object[] parameters = value as object[];
-        int[] c = parameters[0] as int[];
-        bool x = (bool)parameters[1];
 
-        Transform[] position = new Transform[c.Length];
-        Material[] material = new Material[c.Length];
+        renderer.material.color = endColor;
 
-        Vector3[] startPosition = new Vector3[c.Length];
-        Vector3[] targetPosition = new Vector3[c.Length];
-        float progress = 0;
-
-        float targetDis;
-        float lerpedAlpha;
-
-        if (x)
-            targetDis = distance;
-        else
-            targetDis = -distance;
-
-        for (int i = 0; i < c.Length; i++)
+        if (endColor == redColor)
         {
-            position[i] = plits[c[i]].transform;
-            targetPosition[i] = position[i].position + new Vector3(0f, targetDis, 0f);
-            startPosition[i] = position[i].position;
-            material[i] = plits[c[i]].GetComponent<Renderer>().material;
+            buferPlit.Add(block);
+            block.GetComponent<Collider>().isTrigger = true;
         }
-        yield return new WaitForSeconds(0.05f);
+        else if(endColor == blueColor)
+        {
+            block.GetComponent<Collider>().isTrigger = false;
+            StartCoroutine(FadeBlock(block, endColor, standartColor, transitionTime));
+        }
+    }
+    public void ResetBuffer()
+    {
+        foreach( var i in buferPlit)
+        {
+            i.SetActive(true);
+            StartCoroutine(UpdatePlitsPosition(i, i.transform.position, i.transform.position + distance, transitionTime, endAlpha, startAlpha, false));
+        }
+    }
+    private IEnumerator UpdatePlitsPosition(GameObject block, Vector3 startPos, Vector3 endPosition, float time, float startAl, float endAl, bool buferize)
+    {
+        float progress = 0;
+        float lerpedAlpha;
+        Renderer renderer = block.GetComponent<Renderer>();
 
         while (progress < 1)
         {
-            progress += Time.deltaTime / timePos;
+            progress += Time.deltaTime / time;
 
-            for (int i = 0; i < c.Length; i++)
-            {
-                position[i].position = Vector3.Lerp(startPosition[i], targetPosition[i], progress);
+                block.transform.position = Vector3.Lerp(startPos, endPosition, progress);
 
-                if(x)
-                    lerpedAlpha = Mathf.Lerp(endAlpha, startAlpha, progress);
-                else
-                    lerpedAlpha = Mathf.Lerp(startAlpha, endAlpha, progress);
+            lerpedAlpha = Mathf.Lerp(startAl, endAl, progress);
 
-                material[i].color = new Color(material[i].color.r, material[i].color.g, material[i].color.b, lerpedAlpha);
-            }
+            renderer.material.color = new Color(renderer.material.color.r, renderer.material.color.g, renderer.material.color.b, lerpedAlpha);
             yield return new WaitForSeconds(0.05f);
         }
-        foreach (var i in position)
-            i.gameObject.SetActive(false);
+        if (buferize)
+            block.SetActive(false);
     }
 }

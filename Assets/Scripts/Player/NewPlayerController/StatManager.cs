@@ -48,7 +48,6 @@ namespace SA
 
         float actionDelay = 0;
         
-
         public void Init()
         {
             SetupAnimator();
@@ -67,7 +66,6 @@ namespace SA
             ignoreLayer = ~(1 << 9);
 
             anim.SetBool("onGround", true);
-            
         }
         void SetupAnimator()
         {
@@ -145,6 +143,7 @@ namespace SA
             if (!onGround)
                 speeds.y = rigid.velocity.y;
             rigid.velocity = speeds;
+            Debug.Log(speeds);
 
             targetDir.y = 0;
             if (targetDir == Vector3.zero)

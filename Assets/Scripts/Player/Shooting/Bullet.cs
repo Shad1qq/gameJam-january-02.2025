@@ -27,8 +27,6 @@ public class Bullet : MonoBehaviour
             }
             Vector3 currentRotation = new Vector3(currentCollider.transform.position.x, playerTr.position.y, currentCollider.transform.position.z);
             playerTr.LookAt(currentRotation);
-            
-
         }
         if (currentCollider != null) 
             GetComponent<Rigidbody>().transform.position = Vector3.Lerp(transform.position, currentCollider.transform.position, shootClass.bulletSpeed * Time.deltaTime);
