@@ -228,6 +228,7 @@ MonoBehaviour:
   prefab: {fileID: 4111299608079381582, guid: 691b8a9ec61098847a042a33544896b5, type: 3}
   firePoint: {fileID: 6461348749970920096}
   radius: 4.94
+  Gizmo: 0
 --- !u!114 &5783868818790646611
 MonoBehaviour:
   m_ObjectHideFlags: 0

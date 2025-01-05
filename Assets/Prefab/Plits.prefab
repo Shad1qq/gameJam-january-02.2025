@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7626953158075548262}
   - component: {fileID: 8070462265292983857}
   - component: {fileID: 7314625570132937687}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Plits
   m_TagString: Plit
   m_Icon: {fileID: 0}
@@ -94,10 +94,10 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1280
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 767
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0

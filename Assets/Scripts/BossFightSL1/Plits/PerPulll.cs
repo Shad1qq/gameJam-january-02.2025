@@ -16,6 +16,8 @@ public class PerPulll : MonoBehaviour
 
     SphereCollider playCol;
 
+    float yAr;
+
     public float radius = 8f;
     void Start()
     {
@@ -23,11 +25,17 @@ public class PerPulll : MonoBehaviour
 
         playCol = player.AddComponent<SphereCollider>();
         playCol.isTrigger = true;
-        player.GetComponent<SphereCollider>().radius = radius;
+        playCol.radius = radius;
+        playCol.layerOverridePriority = 5;
+        playCol.includeLayers = 11;
+        playCol.excludeLayers = ~(1 << 11);
 
         var q = player.AddComponent<TriggersPlit>();
         q.pull = this;
-       
+
+        var tr = arenaPlitPoint.transform;
+        yAr = tr.position.y;
+
         StartCoroutine(UpdatePlit());
     }
     private void OnTriggerEnter(Collider other)
@@ -50,9 +58,9 @@ public class PerPulll : MonoBehaviour
         foreach (Transform i in arenaPlitPoint.transform)
         {
             plit.UpdateColorPlits(i.gameObject, ver: true);
-            plit.UpdatePositionPlits(i.gameObject, true);
+            plit.UpdatePositionPlits(i.gameObject, true, z: yAr);
         }
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(3f);
 
         Destroy(perPlitPoint.gameObject, 0);
 
@@ -67,7 +75,7 @@ public class PerPulll : MonoBehaviour
             foreach(var i in plitDis)
             {
                 float distance = Vector3.Distance(player.transform.position, i.transform.position);
-                if(distance < (radius / 4))
+                if(distance < (radius / 5.5))
                 {
                     plitDel.Add(i);
                     del.Add(i);

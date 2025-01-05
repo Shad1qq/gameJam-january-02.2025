@@ -23,10 +23,10 @@ public class ControlPlits : MonoBehaviour
         var endColor = (ver) ? blueColor : redColor;
         StartCoroutine(FadeBlock(c, startCol, endColor, transitionTime));
     }
-    public void UpdatePositionPlits(GameObject c, bool Ver = false)
+    public void UpdatePositionPlits(GameObject c, bool Ver = false, float z = 0)
     {
         Vector3 target = c.transform.position + (Ver ? distance : -distance);
-        StartCoroutine(UpdatePlitsPosition(c, c.transform.position, target, transitionTime, (Ver) ? endAlpha : startAlpha, (Ver) ? startAlpha : endAlpha, (Ver) ? false : true));
+        StartCoroutine(UpdatePlitsPosition(c, c.transform.position, target, transitionTime, (Ver) ? endAlpha : startAlpha, (Ver) ? startAlpha : endAlpha, (Ver) ? false : true, y: z));
     }
     IEnumerator FadeBlock(GameObject block, Color startColor, Color endColor, float duration)
     {
@@ -61,11 +61,13 @@ public class ControlPlits : MonoBehaviour
             StartCoroutine(UpdatePlitsPosition(i, i.transform.position, i.transform.position + distance, transitionTime, endAlpha, startAlpha, false));
         }
     }
-    private IEnumerator UpdatePlitsPosition(GameObject block, Vector3 startPos, Vector3 endPosition, float time, float startAl, float endAl, bool buferize)
+    private IEnumerator UpdatePlitsPosition(GameObject block, Vector3 startPos, Vector3 endPosition, float time, float startAl, float endAl, bool buferize, float y = 0)
     {
         float progress = 0;
         float lerpedAlpha;
         Renderer renderer = block.GetComponent<Renderer>();
+        if(y != 0)
+            endPosition = new(endPosition.x, y + distance.y, endPosition.z);
 
         while (progress < 1)
         {
