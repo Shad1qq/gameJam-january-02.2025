@@ -47,6 +47,7 @@ namespace SA
         internal LayerMask ignoreLayer;
 
         float actionDelay = 0;
+        
 
         public void Init()
         {
@@ -66,6 +67,7 @@ namespace SA
             ignoreLayer = ~(1 << 9);
 
             anim.SetBool("onGround", true);
+            
         }
         void SetupAnimator()
         {
