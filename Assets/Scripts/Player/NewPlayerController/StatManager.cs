@@ -1,4 +1,3 @@
-using System.Security;
 using UnityEngine;
 
 namespace SA
@@ -178,7 +177,7 @@ namespace SA
             canMove = false;
             inAction = true;
 
-            anim.CrossFade(targetAnim, 0.2f);
+            anim.CrossFade(targetAnim, 0.2f);//тут переписать можно добавив поворот блокируовку если надо под нужный инпут сделать и если хочетка анимку накинуть по шаблону
         }
         public void Tick(float d)
         {
