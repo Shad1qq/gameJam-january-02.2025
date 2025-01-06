@@ -1,18 +1,21 @@
 using UnityEngine;
 
-public class TriggersPlit : MonoBehaviour
+namespace SA
 {
-    internal PerPulll pull;
-
-    void OnTriggerEnter(Collider other)
+    public class TriggersPlit : MonoBehaviour
     {
-        if (other.CompareTag("Plit"))
-            pull.OnEnter(other);
-    }
+        internal PerPulll pull;
 
-    void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag("Plit"))
-            pull.OnExit(other);
+        void OnTriggerEnter(Collider other)
+        {
+            if (other.CompareTag("Plit"))
+                pull.OnEnter(other);
+        }
+
+        void OnTriggerExit(Collider other)
+        {
+            if (other.CompareTag("Plit"))
+                pull.OnExit(other);
+        }
     }
 }

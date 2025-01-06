@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class ControlPlits : MonoBehaviour
 {
-    [SerializeField] private float timePos = 1f;
     [SerializeField] private Vector3 distance = new(0, 1f, 0);
 
     internal Color blueColor = new(0, 0, 1, 1);
