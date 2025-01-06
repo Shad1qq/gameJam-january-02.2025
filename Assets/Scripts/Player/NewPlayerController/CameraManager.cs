@@ -11,8 +11,8 @@ namespace SA
         public Transform target;
         public Transform lockOnTransform;
 
-        public Transform pivot;
-        public Transform camTrans;
+        internal Transform pivot;
+        internal Transform camTrans;
 
         readonly float turnSmoothing = .1f;
         public float minAngle = -35f;
