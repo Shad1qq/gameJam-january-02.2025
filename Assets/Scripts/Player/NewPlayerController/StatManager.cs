@@ -143,7 +143,7 @@ namespace SA
             if (!onGround)
                 speeds.y = rigid.velocity.y;
             rigid.velocity = speeds;
-            Debug.Log(speeds);
+            //Debug.Log(speeds);
 
             targetDir.y = 0;
             if (targetDir == Vector3.zero)
