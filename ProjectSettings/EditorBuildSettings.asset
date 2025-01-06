@@ -14,9 +14,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/test 1.unity
     guid: 9ff47b34c44bc8f449ad0430993692a3
-  - enabled: 1
-    path: Assets/Scenes/transition.unity
-    guid: 89675c2c812becb41b12f110591aa835
   m_configObjects:
     com.unity.adaptiveperformance.loader_settings: {fileID: 11400000, guid: 4071a3fa3be309648b13c132105403f4, type: 2}
     com.unity.adaptiveperformance.simulator.provider_settings: {fileID: 11400000, guid: 60571263341a4664abedac07abb258b0, type: 2}
