@@ -118,7 +118,7 @@ MonoBehaviour:
   noDamageState: 1
   isDead: 0
   activModel: {fileID: 8624860802860785989}
-  moveSpeed: 5
+  moveSpeed: 3
   runSpeed: 9
   rotationSpeed: 5
   toGround: 0.5

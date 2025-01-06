@@ -23,7 +23,7 @@ namespace SA
 
         bool rightAxis_down;
 
-        StatManager states;
+        internal StatManager states;
         internal CameraManager camManager;
         RagdolController ragControl;
         Pistol pis;
