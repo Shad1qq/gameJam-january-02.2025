@@ -62,7 +62,7 @@ public class LoadScenesAdditive : MonoBehaviour
         int sceneCount = SceneManager.loadedSceneCount;
         if(sceneCount > 0)
         {
-            Scene lastLoadedScene = SceneManager.GetSceneAt(sceneCount -2 );
+            Scene lastLoadedScene = SceneManager.GetSceneAt(sceneCount -2);
             yield return SceneManager.UnloadSceneAsync(lastLoadedScene);
         }
     }
