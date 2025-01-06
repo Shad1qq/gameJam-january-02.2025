@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Enemy : MonoBehaviour
 {
@@ -8,13 +9,17 @@ public class Enemy : MonoBehaviour
     [SerializeField]private int _maxhp;
     private HealthCharcters hlthcharacters;
     [SerializeField] private int damage;
+    [SerializeField] GameObject playerPosition;
+    NavMeshAgent agent;
 
     private void Start() 
     {
         _hp = _maxhp;
         hlthcharacters = GameObject.FindGameObjectWithTag("Player").GetComponent<HealthCharcters>();
+        playerPosition = GameObject.FindGameObjectWithTag("Player");
+        agent = GetComponent<NavMeshAgent>();
     }
-    //Получиние урона
+    //Получение урона
     private void TakeDamage(int damage, bool enablelog /*<= включает и выключает логи*/)
     {
         _hp -= damage;
@@ -25,6 +30,7 @@ public class Enemy : MonoBehaviour
     private void Update()
     {
         CheckStatus();
+        ManHunt();
     }
 
     //проверка статуса игрока
@@ -36,6 +42,11 @@ public class Enemy : MonoBehaviour
     void Die()
     {
         Destroy(gameObject);
+    }
+
+    void ManHunt()
+    {
+        agent.SetDestination(playerPosition.transform.position);
     }
 
     //работа с коллизиями
