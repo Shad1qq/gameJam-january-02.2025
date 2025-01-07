@@ -29,8 +29,8 @@ public class Enemy : MonoBehaviour
 
     private void Update()
     {
-        CheckStatus();
         ManHunt();
+        CheckStatus();      
     }
 
     //проверка статуса игрока
@@ -46,7 +46,11 @@ public class Enemy : MonoBehaviour
 
     void ManHunt()
     {
-        agent.SetDestination(playerPosition.transform.position);
+        if (gameObject.activeSelf)
+        {
+            agent.SetDestination(playerPosition.transform.position);
+        }
+        else agent.enabled = false;
     }
 
     //работа с коллизиями

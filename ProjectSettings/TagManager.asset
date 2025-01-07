@@ -12,6 +12,7 @@ TagManager:
   - Plit
   - Transform
   - Point
+  - Boss
   layers:
   - Default
   - TransparentFX
