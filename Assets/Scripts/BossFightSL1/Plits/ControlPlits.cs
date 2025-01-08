@@ -72,7 +72,7 @@ public class ControlPlits : MonoBehaviour
         {
             progress += Time.deltaTime / time;
 
-                block.transform.position = Vector3.Lerp(startPos, endPosition, progress);
+            block.transform.position = Vector3.Lerp(startPos, endPosition, progress);
 
             lerpedAlpha = Mathf.Lerp(startAl, endAl, progress);
 

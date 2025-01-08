@@ -15,8 +15,10 @@ namespace SA
         public float maxAng = -20;
 
         CameraManager han;
+        ChController controlCh;
         private void Start()
         {
+            controlCh = FindObjectOfType<ChController>();
             player = FindObjectOfType<InputHandler>().gameObject;
             PerPulll p = FindObjectOfType<PerPulll>();
             p.arenaTry += UpdateArena;
@@ -24,9 +26,17 @@ namespace SA
             han = player.GetComponent<InputHandler>().camManager;
 
             han.maxAngle = maxAng;
+
+            player.GetComponent<InputHandler>().states.run = false;
+
+            controlCh.Init();
+            controlCh.Events += Pereh;
         }
         void UpdateArena()
         {
+            controlCh.Ch.SetActive(true);
+            controlCh.strel.SetActive(true);
+
             player.GetComponent<InputHandler>().states.run = false;
 
             han.target = cameraTarget.transform;
@@ -37,21 +47,40 @@ namespace SA
             han.maxAngle = maxAng;
             han.vert = true;
 
-            Invoke(nameof(UpArena), 2f);
+            Invoke(nameof(UpsArena), 1f);
         }
-
+        void UpsArena()
+        {
+            StartCoroutine(controlCh.ChGoStrel());
+            Invoke(nameof(UpArena), 1f);
+        }
         void UpArena()
         {
             player.GetComponent<InputHandler>().states.run = true;
             han.lockOnTransform = player.transform;
             han.vert = false;
             bag.SetActive(true);
-
-            StartCoroutine(CameraUpdate());
         }
-        IEnumerator CameraUpdate()
+
+        void UpdateFaz()
         {
-            yield return null;
+            StartCoroutine(controlCh.ChGoStrel());
+        }
+        void PerehMod()
+        {
+            controlCh.Ch2.SetActive(true);
+            controlCh.Ch.SetActive(false);
+            StartCoroutine(controlCh.ChGoStrel());
+        }
+        void Pereh()
+        {
+            if (!controlCh.Ch2.activeInHierarchy)
+            {
+                PerehMod();
+                return;
+            }
+
+            UpdateFaz();
         }
     }
 }
