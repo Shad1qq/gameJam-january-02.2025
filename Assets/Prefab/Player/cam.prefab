@@ -116,7 +116,7 @@ MonoBehaviour:
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 0
+  m_RenderPostProcessing: 1
   m_Antialiasing: 0
   m_AntialiasingQuality: 2
   m_StopNaN: 0
@@ -219,9 +219,8 @@ MonoBehaviour:
   mouseSpeed: 2
   target: {fileID: 0}
   lockOnTransform: {fileID: 0}
-  pivot: {fileID: 0}
-  camTrans: {fileID: 0}
   minAngle: -35
   maxAngle: 35
   lookAngle: 0
   tillAngle: 0
+  vert: 0
