@@ -16,6 +16,7 @@ public class LoadScenesAdditive : MonoBehaviour
     {
         StartCoroutine(LoadFirstScenes());
         TriggerLoader.loadScene += () => StartCoroutine(UnloadScene());
+        
     }
 
     private void Update()
@@ -66,5 +67,6 @@ public class LoadScenesAdditive : MonoBehaviour
             yield return SceneManager.UnloadSceneAsync(lastLoadedScene);
         }
     }
+
 
 }

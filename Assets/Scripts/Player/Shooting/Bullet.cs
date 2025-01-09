@@ -19,19 +19,25 @@ public class Bullet : MonoBehaviour
     {
         foreach (Collider collider in shootClass.hitColliders)
         {
-            float distance = Vector3.Distance(transform.position, collider.transform.position);
+            float distance;
+            if (collider != null) distance = Vector3.Distance(transform.position, collider.transform.position);
+            else distance = 0;
             if (distance < closestDistance) 
             {
                 closestDistance = distance;
                 currentCollider = collider;           
             }
-            Vector3 currentRotation = new Vector3(currentCollider.transform.position.x, playerTr.position.y, currentCollider.transform.position.z);
-            playerTr.LookAt(currentRotation);
+            if (currentCollider != null) { 
+                Vector3 currentRotation = new Vector3(currentCollider.transform.position.x, playerTr.position.y, currentCollider.transform.position.z);
+                playerTr.LookAt(currentRotation);
+            }
+            
         }
         if (currentCollider != null) 
-            GetComponent<Rigidbody>().transform.position = Vector3.Lerp(transform.position, currentCollider.transform.position, shootClass.bulletSpeed * Time.deltaTime);
+            GetComponent<Rigidbody>().transform.position = Vector3.MoveTowards(transform.position, currentCollider.transform.position, shootClass.bulletSpeed * Time.deltaTime);
         else
             Destroy(gameObject);
+        
 
         if (Vector3.Distance(transform.position, shootClass.gameObject.transform.position) >= shootClass.maxDistance)
         {

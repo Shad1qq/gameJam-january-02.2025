@@ -41,7 +41,7 @@ public class Enemy : MonoBehaviour
 
     void Die()
     {
-        Destroy(gameObject);
+        if(gameObject != null) Destroy(gameObject);
     }
 
     void ManHunt()
