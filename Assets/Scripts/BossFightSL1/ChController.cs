@@ -1,11 +1,11 @@
 using System;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class ChController : MonoBehaviour
 {
     public GameObject strel;
+    public GameObject dopStrel;
 
     public GameObject Ch;
     public GameObject Ch2;
@@ -46,6 +46,7 @@ public class ChController : MonoBehaviour
 
         au = GetComponent<AudioSource>();
 
+        dopStrel.SetActive(false);
         strel.SetActive(false);
         Ch.SetActive(false);
         Ch2.SetActive(false);

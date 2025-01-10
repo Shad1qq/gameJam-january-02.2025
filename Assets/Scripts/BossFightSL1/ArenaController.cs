@@ -1,65 +1,163 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 namespace SA
 {
     public class ArenaController : MonoBehaviour
     {
+        public AudioClip perehodClip;
+
+        Volume render;
+
+        public GameObject prefabRukBoss;
+        GameObject[] rukBoss = new GameObject[4];
+        public Transform[] positionRukStart = new Transform[2];
+        public Transform[] statPos = new Transform[4];
+
+        public GameObject prefabBoss;
+        public Transform[] positionBoss1and2;
+        GameObject[] boss = new GameObject[2];
+        public Transform targetPointStartBoss;
+
         GameObject player;
 
         public GameObject cameraTarget;
         public GameObject cameraPosition;
-        public GameObject bag;
-
         public float ang = -80;
         public float maxAng = -20;
 
+        public GameObject bag;
+
         CameraManager han;
         ChController controlCh;
+
         private void Start()
         {
+            StartCoroutine(Starts());
+        }
+        private IEnumerator Starts()
+        {
+            render = FindObjectOfType<Volume>();
+            render.weight = 5f;
+
             controlCh = FindObjectOfType<ChController>();
             player = FindObjectOfType<InputHandler>().gameObject;
             PerPulll p = FindObjectOfType<PerPulll>();
             p.arenaTry += UpdateArena;
 
-            han = player.GetComponent<InputHandler>().camManager;
+            controlCh.Init();
+            controlCh.Events += Pereh;
 
+            han = player.GetComponent<InputHandler>().camManager;
             han.maxAngle = maxAng;
 
             player.GetComponent<InputHandler>().states.run = false;
+            yield return null;
 
-            controlCh.Init();
-            controlCh.Events += Pereh;
+            for (int i = 0; i < 4; i++)
+            {
+                rukBoss[i] = Instantiate(prefabRukBoss);
+                rukBoss[i].SetActive(false);
+                yield return null;
+            }
+            rukBoss[0].transform.localScale = new Vector3(rukBoss[0].transform.localScale.x, - rukBoss[0].transform.localScale.y, rukBoss[0].transform.localScale.z);
+            rukBoss[2].transform.localScale = new Vector3(rukBoss[2].transform.localScale.x, -rukBoss[2].transform.localScale.y, rukBoss[2].transform.localScale.z);
+            for (int i = 0; i < boss.Length; i++)
+            {
+                boss[i] = Instantiate(prefabBoss);
+                boss[i].SetActive(false);
+                yield return null;
+            }
         }
+
         void UpdateArena()
         {
+            controlCh.dopStrel.SetActive(true);
+
             controlCh.Ch.SetActive(true);
             controlCh.strel.SetActive(true);
-
-            player.GetComponent<InputHandler>().states.run = false;
 
             han.target = cameraTarget.transform;
             han.lockOnTransform = cameraPosition.transform;
             han.lockOn = true;
-            han.follofSpeed = 2f;
-            han.minAngle = ang;
-            han.maxAngle = maxAng;
             han.vert = true;
 
-            Invoke(nameof(UpsArena), 1f);
+            han.follofSpeed = 2f;
+
+            han.minAngle = ang;
+            han.maxAngle = maxAng;
+
+            Invoke(nameof(BlurArena), 1f);
         }
-        void UpsArena()
+        IEnumerator Blur()
+        {
+            float progress = 0;
+
+            if (render.profile.TryGet<DepthOfField>(out var filmicTonemapper))
+                filmicTonemapper.active = true;
+            while(progress < 1)
+            {
+                progress += Time.deltaTime;
+                filmicTonemapper.focalLength.value = Mathf.Lerp(filmicTonemapper.focalLength.max, filmicTonemapper.focalLength.min, progress);
+                yield return null;
+            }
+            filmicTonemapper.active = false;
+        }
+        void BlurArena()
+        {
+            boss[0].transform.position = positionBoss1and2[0].position;
+            rukBoss[0].transform.position = positionRukStart[0].position;
+            rukBoss[1].transform.position = positionRukStart[1].position;
+
+            GetComponent<AudioSource>().PlayOneShot(perehodClip);
+
+            StartCoroutine(Blur());
+
+            bag.SetActive(true);
+
+            boss[0].SetActive(true);
+            boss[0].GetComponent<BossAnim>().targetPoint = targetPointStartBoss;
+            StartCoroutine(boss[0].GetComponent<BossAnim>().Moved());
+
+            rukBoss[0].SetActive(true);
+            rukBoss[1].SetActive(true);
+            rukBoss[0].GetComponent<BossAnim>().targetPoint = statPos[0];
+            rukBoss[1].GetComponent<BossAnim>().targetPoint = statPos[1];
+            StartCoroutine(rukBoss[0].GetComponent<BossAnim>().Moved());
+            StartCoroutine(rukBoss[1].GetComponent<BossAnim>().Moved());
+
+            Invoke(nameof(ArenaEndPrefu), 1f);
+        }
+        void ArenaEndPrefu()
         {
             StartCoroutine(controlCh.ChGoStrel());
-            Invoke(nameof(UpArena), 1f);
-        }
-        void UpArena()
-        {
+
             player.GetComponent<InputHandler>().states.run = true;
             han.lockOnTransform = player.transform;
             han.vert = false;
-            bag.SetActive(true);
+
+            MoveSet set = boss[0].GetComponent<MoveSet>();
+            set.player = player;
+            set.statPosition = positionBoss1and2[0];
+            set.UpdateStates(Set.pocoiBoss);
+
+            Invoke(nameof(ArenaStartFight), 1f);
+        }//начинаем опездюливание
+        void ArenaStartFight()
+        {
+            MoveSet set = rukBoss[0].GetComponent<MoveSet>();
+            set.player = player;
+            set.statPosition = statPos[0];
+            set.statPosition.position += Vector3.up * 5f;
+            set.UpdateStates(Set.hlopRuk);
+
+            set = rukBoss[1].GetComponent<MoveSet>();
+            set.player = player;
+            set.statPosition = statPos[1];
+            set.statPosition.position += Vector3.up * 5f;
+            set.UpdateStates(Set.returnState);
         }
 
         void UpdateFaz()
@@ -75,10 +173,7 @@ namespace SA
         void Pereh()
         {
             if (!controlCh.Ch2.activeInHierarchy)
-            {
-                PerehMod();
-                return;
-            }
+                PerehMod();//помен€ю в будущем на усл нанеени€ урона 
 
             UpdateFaz();
         }
