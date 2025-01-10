@@ -54,6 +54,7 @@ namespace SA
             han.maxAngle = maxAng;
 
             player.GetComponent<InputHandler>().states.run = false;
+            player.GetComponent<Pistol>().enabled = false;
             yield return null;
 
             for (int i = 0; i < 4; i++)
@@ -62,8 +63,10 @@ namespace SA
                 rukBoss[i].SetActive(false);
                 yield return null;
             }
-            rukBoss[0].transform.localScale = new Vector3(rukBoss[0].transform.localScale.x, - rukBoss[0].transform.localScale.y, rukBoss[0].transform.localScale.z);
-            rukBoss[2].transform.localScale = new Vector3(rukBoss[2].transform.localScale.x, -rukBoss[2].transform.localScale.y, rukBoss[2].transform.localScale.z);
+            Transform ruk = rukBoss[0].transform.Find("Armature");
+            ruk.localScale = new Vector3(ruk.localScale.x, ruk.localScale.y, -ruk.localScale.z);
+            ruk = rukBoss[2].transform.Find("Armature");
+            ruk.localScale = new Vector3(ruk.localScale.x, ruk.localScale.y, -ruk.localScale.z);
             for (int i = 0; i < boss.Length; i++)
             {
                 boss[i] = Instantiate(prefabBoss);

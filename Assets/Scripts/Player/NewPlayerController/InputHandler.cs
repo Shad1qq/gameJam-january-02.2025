@@ -46,8 +46,7 @@ namespace SA
             ragControl = states.activModel.AddComponent<RagdolController>();
             ragControl.Init(states.anim);
 
-            pis = GetComponent<Pistol>();
-            if(pis == null)
+            if(!TryGetComponent<Pistol>(out pis))
                 pis = gameObject.AddComponent<Pistol>();
 
             states.run = !states.run;

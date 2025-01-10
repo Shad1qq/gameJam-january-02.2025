@@ -1,8 +1,13 @@
 using System.Collections;
 using UnityEngine;
+using static UnityEngine.ParticleSystem;
 
 public class MoveSet : MonoBehaviour
 {
+    [Header("хлопок")]
+    public AudioClip audioHlopok;
+    public ParticleSystem partice;
+
     public GameObject attacer;
     public Transform statPosition;
     public GameObject player;
@@ -10,8 +15,19 @@ public class MoveSet : MonoBehaviour
     float hor = 1f;
     float speed = 1f;
 
+    OpenAndCloseColliderDamage openCol;
+    ControlPlits plitContr;
+    AudioSource au => GetComponent<AudioSource>();
     private void Start()
     {
+        if(GetComponent<Collider>() != null)
+        {
+            plitContr = FindObjectOfType<ControlPlits>();
+            openCol = GetComponent<OpenAndCloseColliderDamage>();
+            if (openCol == null)
+                openCol = gameObject.AddComponent<OpenAndCloseColliderDamage>();
+        }
+
         attacer = gameObject;
     }
     public IEnumerator PocoiStatBoss()
@@ -43,6 +59,8 @@ public class MoveSet : MonoBehaviour
 
         float progress = 0;
         stPoint = transform.position;
+
+        GetComponent<Animator>().SetBool("der", true);
         while (progress < 1)
         {
             progress += Time.deltaTime * speed;
@@ -83,12 +101,37 @@ public class MoveSet : MonoBehaviour
         }
         float progres = 0;
         stPoint = transform.position;
+
+        openCol.OpenColloder();
+        Vector3 pos = player.transform.position;
         while (progres < 1f)
         {
-            progres += Time.deltaTime * 5;
-            transform.position = Vector3.Lerp(stPoint, player.transform.position, progres);
+            progres += Time.deltaTime * 3;
+            transform.position = Vector3.Lerp(stPoint, pos, progres);
             yield return null;
         }
+        au.PlayOneShot(audioHlopok);
+        partice.Play();
+
+        yield return new WaitForSeconds(1f);
+        openCol.CloseCollider();
+
+        foreach(var i in openCol.plit)
+        {
+            plitContr.UpdateColorPlits(i);
+            plitContr.UpdatePositionPlits(i);
+        }
+        openCol.plit.Clear();
+
+        int c = Random.Range(0, 2);
+        Set set;
+
+        if (c == 1)
+            set = Set.returnState;
+        else
+            set = Set.hlopRuk;
+
+        UpdateStates(set);
     }
 
     public void UpdateStates(Set s)

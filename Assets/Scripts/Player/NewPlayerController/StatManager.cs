@@ -48,8 +48,12 @@ namespace SA
 
         float actionDelay = 0;
         
+        void ReactDamage()
+        {
+        }
         public void Init()
         {
+            DamageReaction += ReactDamage;
             SetupAnimator();
 
             rigid = GetComponent<Rigidbody>();
