@@ -56,7 +56,7 @@ namespace SA
         }
         private void OnTriggerEnter(Collider other)
         {
-            if(other.gameObject.layer == 8)
+            if(other.gameObject.layer == 8 && other.GetComponent<InputHandler>())
             {
                 arenaTry?.Invoke();
 

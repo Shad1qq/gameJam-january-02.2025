@@ -24,14 +24,16 @@ public class ChController : MonoBehaviour
     public event Action Events;
     private void FixedUpdate()
     {
-        _time += Time.deltaTime;
+        if (Ch2.activeInHierarchy)
+        {
+            _time += Time.deltaTime;
 
-        if(Ch2.activeInHierarchy)
             for (int i = 0; i < osk.Length; i++)
             {
                 float sin = Mathf.Sin(f: (_time + Time.deltaTime) * os[i].y) - Mathf.Sin(f: _time * os[i].y);
                 osk[i].transform.localPosition += new Vector3(x: 0, y: sin * os[i].x, z: 0);
             }
+        }
     }
     public void Init()
     {
@@ -67,8 +69,7 @@ public class ChController : MonoBehaviour
     }
     public void UpStrel()
     {
-        strel.transform.Rotate(Vector3.forward, gr, Space.Self);
-
+        strel.transform.Rotate(Vector3.forward * gr, Space.Self);
         au.Play();
     }
 }

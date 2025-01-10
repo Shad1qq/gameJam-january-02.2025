@@ -103,7 +103,8 @@ QualitySettings:
     terrainBillboardStart: 50
     terrainFadeLength: 5
     terrainMaxTrees: 50
-    excludedTargetPlatforms: []
+    excludedTargetPlatforms:
+    - Server
   - serializedVersion: 3
     name: Medium
     pixelLightCount: 1
@@ -152,7 +153,8 @@ QualitySettings:
     terrainBillboardStart: 50
     terrainFadeLength: 5
     terrainMaxTrees: 50
-    excludedTargetPlatforms: []
+    excludedTargetPlatforms:
+    - Server
   - serializedVersion: 3
     name: High
     pixelLightCount: 2
@@ -202,7 +204,7 @@ QualitySettings:
     terrainFadeLength: 5
     terrainMaxTrees: 50
     excludedTargetPlatforms:
-    - WebGL
+    - Server
   - serializedVersion: 3
     name: Very High
     pixelLightCount: 3
@@ -252,9 +254,8 @@ QualitySettings:
     terrainFadeLength: 5
     terrainMaxTrees: 50
     excludedTargetPlatforms:
-    - WebGL
     - Server
-    - Standalone
+    - WebGL
   - serializedVersion: 3
     name: Ultra
     pixelLightCount: 4

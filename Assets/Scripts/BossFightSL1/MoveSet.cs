@@ -113,14 +113,15 @@ public class MoveSet : MonoBehaviour
         au.PlayOneShot(audioHlopok);
         partice.Play();
 
-        yield return new WaitForSeconds(1f);
-        openCol.CloseCollider();
-
-        foreach(var i in openCol.plit)
+        foreach (var i in openCol.plit)
         {
             plitContr.UpdateColorPlits(i);
             plitContr.UpdatePositionPlits(i);
         }
+
+        yield return new WaitForSeconds(1f);
+        openCol.CloseCollider();
+
         openCol.plit.Clear();
 
         int c = Random.Range(0, 2);

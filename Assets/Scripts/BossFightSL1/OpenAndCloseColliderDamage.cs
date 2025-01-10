@@ -22,11 +22,11 @@ public class OpenAndCloseColliderDamage : HealthCharcters
     }
     private void OnTriggerEnter(Collider col)
     {
-        if(col.gameObject.layer == 8)
+        if(col.gameObject.layer == 8 && col.GetComponent<HealthCharcters>())
         {
             DealDamage(col.GetComponent<HealthCharcters>(), damage);
         }
-        if(col.tag == "Plit")
+        if(col.CompareTag("Plit"))
         {
             plit.Add(col.gameObject);
         }
