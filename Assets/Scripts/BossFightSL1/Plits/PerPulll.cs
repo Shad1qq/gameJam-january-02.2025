@@ -29,6 +29,7 @@ namespace SA
 
         List<GameObject> partPull = new();
 
+        bool isTrig;
         void Start()
         {
             for(int i = 0; i < 5; i++)
@@ -56,8 +57,13 @@ namespace SA
         }
         private void OnTriggerEnter(Collider other)
         {
+            if (isTrig)
+                return;
+
             if(other.gameObject.layer == 8 && other.GetComponent<InputHandler>())
             {
+                isTrig = true;
+
                 arenaTry?.Invoke();
 
                 StopAllCoroutines();

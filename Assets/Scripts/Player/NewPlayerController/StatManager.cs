@@ -76,7 +76,7 @@ namespace SA
             a_hook.Init(this);
 
             gameObject.layer = 8;
-            ignoreLayer = ~(1 << 8);
+            ignoreLayer = ~((1 << 8) | (1 << 12) | (1 << 10));
 
             anim.SetBool("onGround", true);
         }
