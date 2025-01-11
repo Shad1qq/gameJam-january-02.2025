@@ -157,13 +157,13 @@ namespace SA
             MoveSet set = rukBoss[0].GetComponent<MoveSet>();
             set.player = player;
             set.statPosition = statPos[0];
-            set.statPosition.position += Vector3.up * 0.3f;
+            set.statPosition.position += Vector3.up * 5f;
             set.UpdateStates(Set.hlopRuk);
 
             set = rukBoss[1].GetComponent<MoveSet>();
             set.player = player;
             set.statPosition = statPos[1];
-            set.statPosition.position += Vector3.up * 0.3f;
+            set.statPosition.position += Vector3.up * 5f;
             set.UpdateStates(Set.returnState);
         }
 

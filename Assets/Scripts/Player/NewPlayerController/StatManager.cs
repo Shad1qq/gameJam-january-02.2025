@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace SA
@@ -47,12 +48,20 @@ namespace SA
         internal LayerMask ignoreLayer;
 
         float actionDelay = 0;
-        
+
+        internal bool dead;
+        public event Action DeadEvent;
         void ReactDamage()
         {
         }
+        void ReactionDead()
+        {
+            DeadEvent?.Invoke();
+            dead = true;
+        }
         public void Init()
         {
+            DeadReaction += ReactionDead;
             DamageReaction += ReactDamage;
             SetupAnimator();
 
@@ -71,6 +80,11 @@ namespace SA
 
             anim.SetBool("onGround", true);
         }
+        private void OnDisable()
+        {
+            DeadReaction -= ReactionDead;
+            DamageReaction -= ReactDamage;
+        }
         void SetupAnimator()
         {
             if (activModel == null)
@@ -87,6 +101,9 @@ namespace SA
         }
         public void FixedTick(float d)
         {
+            if (dead)
+                return;
+
             delta = d;
 
             Jamping();
