@@ -4,27 +4,28 @@ using UnityEngine;
 
 public class TriggerLoader : MonoBehaviour
 {
-    public static Action loadScene;
+    public static Action LoadScene;
+    public static Action DisablegO;
     [SerializeField] GameObject[] gameObjects;
-    float coolDown;
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Player"))
         {
+            ArenaControllerForTwoScene.coolDown = 5;
             Debug.Log("Activate");
-            loadScene?.Invoke();
+            LoadScene?.Invoke();
             EnableAllGameObjects();
+            
         }
     }
 
     private void EnableAllGameObjects()
     {
-        
+        DisablegO?.Invoke();
         foreach (GameObject go in gameObjects) 
         { 
             go.SetActive(true);                       
             Destroy(gameObject);
-        }
-        
+        }      
     }
 }

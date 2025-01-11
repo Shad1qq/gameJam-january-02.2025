@@ -5,23 +5,24 @@ using UnityEngine.SceneManagement;
 
 public class LoadScenesAdditive : MonoBehaviour
 {
-    float coolDown = 5;
+    internal float coolDown = 5;
     [SerializeField]Transform point;
     [SerializeField] private int index;
     [SerializeField]string firstBossScene;
     [SerializeField] GameObject[] enemies;
     bool isCreatedAllow = true;
 
+
     private void Start()
     {
         StartCoroutine(LoadFirstScenes());
-        TriggerLoader.loadScene += () => StartCoroutine(UnloadScene());
+        TriggerLoader.LoadScene += () => StartCoroutine(UnloadScene());
         
     }
 
     private void Update()
     {
-        coolDown -= Time.deltaTime;
+        coolDown -= Time.fixedDeltaTime;
         
         if (enemies.Length <= 0 && coolDown <= 0 && isCreatedAllow == true)
         {
