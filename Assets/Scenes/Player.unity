@@ -142,6 +142,14 @@ PrefabInstance:
       propertyPath: target
       value: 
       objectReference: {fileID: 1112393062}
+    - target: {fileID: 2196750186123347546, guid: 510d2262c90a4f947af6827e6c744963, type: 3}
+      propertyPath: maxAngle
+      value: -15
+      objectReference: {fileID: 0}
+    - target: {fileID: 2196750186123347546, guid: 510d2262c90a4f947af6827e6c744963, type: 3}
+      propertyPath: minAngle
+      value: -25
+      objectReference: {fileID: 0}
     - target: {fileID: 7214372985677862568, guid: 510d2262c90a4f947af6827e6c744963, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
