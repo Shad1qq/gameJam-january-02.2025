@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using UnityEngine;
 
@@ -37,20 +36,20 @@ public class MoveSet : MonoBehaviour
             openCol = GetComponent<OpenAndCloseColliderDamage>();
             if (openCol == null)
                 openCol = gameObject.AddComponent<OpenAndCloseColliderDamage>();
+
+            audioSource = GetComponent<AudioSource>();
+
+            au = GetComponent<AudioSource>();
+            if (au == null)
+                au = gameObject.AddComponent<AudioSource>();
+
+            if (audioSource == null)
+            {
+                audioSource = gameObject.AddComponent<AudioSource>();
+            }
+            audioSource.volume = 0.2f;
+            audioSource.loop = true;
         }
-
-        audioSource = GetComponent<AudioSource>();
-
-        au = GetComponent<AudioSource>();
-        if (au == null)
-            au = gameObject.AddComponent<AudioSource>();
-
-        if (audioSource == null)
-        {
-            audioSource = gameObject.AddComponent<AudioSource>();
-        }
-        audioSource.volume = 0.2f;
-        audioSource.loop = true;
 
         attacer = gameObject;
     }
@@ -97,7 +96,7 @@ public class MoveSet : MonoBehaviour
     {
         float _time = 0;
 
-        while (_time < 3f)
+        while (_time < 2f)
         {
             _time += Time.deltaTime;
 

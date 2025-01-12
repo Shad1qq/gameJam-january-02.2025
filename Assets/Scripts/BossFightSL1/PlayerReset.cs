@@ -13,7 +13,7 @@ public class PlayerReset : HealthCharcters
             DealDamage(other.GetComponent<HealthCharcters>(), damage);
             positionSpawn.SetActive(true);
             positionSpawn.GetComponent<ParticleSystem>().Play();
-            Invoke(nameof(DeletEffect), 2f);
+            Invoke(nameof(DeletEffect), 1f);
         }
     }
     void DeletEffect()

@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
@@ -7,27 +8,37 @@ namespace SA
 {
     public class ArenaController : MonoBehaviour
     {
+        [Header("audio")]
         public AudioClip perehodClip;
 
         Volume render;
 
+        [Header("damage Obj")]
+        public GameObject prefabDamageObj;
+        public List<Transform> spawnDamageObjTransform = new();
+        GameObject[] pullDamageObj = new GameObject[3];
+
+        [Header("rukBoss")]
         public GameObject prefabRukBoss;
         GameObject[] rukBoss = new GameObject[4];
-        public Transform[] positionRukStart = new Transform[2];
-        public Transform[] statPos = new Transform[4];
+        public Transform[] positionRukStart = new Transform[6];
+        public Transform[] statPos = new Transform[6];
 
+        [Header("boss")]
         public GameObject prefabBoss;
-        public Transform[] positionBoss1and2;
+        public Transform[] positionBoss1and2 = new Transform[3];
         GameObject[] boss = new GameObject[2];
-        public Transform targetPointStartBoss;
+        public Transform[] targetPointStartBoss =  new Transform[3];
 
         GameObject player;
 
+        [Header("camera")]
         public GameObject cameraTarget;
         public GameObject cameraPosition;
         public float ang = -80;
         public float maxAng = -20;
 
+        [Header("baground")]
         public GameObject bag;
 
         CameraManager han;
@@ -67,18 +78,35 @@ namespace SA
                 rukBoss[i].SetActive(false);
                 yield return null;
             }
+
             Transform ruk = rukBoss[0].transform.Find("Armature");
             ruk.localScale = new Vector3(ruk.localScale.x, ruk.localScale.y, -ruk.localScale.z);
             ruk = rukBoss[2].transform.Find("Armature");
             ruk.localScale = new Vector3(ruk.localScale.x, ruk.localScale.y, -ruk.localScale.z);
+
             for (int i = 0; i < boss.Length; i++)
             {
                 boss[i] = Instantiate(prefabBoss);
                 boss[i].SetActive(false);
                 yield return null;
             }
-        }
 
+            for (int i = 0; i < pullDamageObj.Length; i++)
+            {
+                pullDamageObj[i] = Instantiate(prefabDamageObj);
+                pullDamageObj[i].SetActive(false);
+            }
+            foreach (GameObject i in pullDamageObj)
+            {
+                DamageObj a = i.GetComponent<DamageObj>();
+                a.contr = this;
+                a.DamageBoss += DamageBoss;
+            }
+        }
+        void DamageBoss()
+        {
+
+        }//sss
         void UpdateArena()
         {
             controlCh.dopStrel.SetActive(true);
@@ -125,7 +153,7 @@ namespace SA
             bag.SetActive(true);
 
             boss[0].SetActive(true);
-            boss[0].GetComponent<BossAnim>().targetPoint = targetPointStartBoss;
+            boss[0].GetComponent<BossAnim>().targetPoint = targetPointStartBoss[0];
             StartCoroutine(boss[0].GetComponent<BossAnim>().Moved());
 
             rukBoss[0].SetActive(true);
@@ -165,6 +193,8 @@ namespace SA
             set.statPosition = statPos[1];
             set.statPosition.position += Vector3.up * 5f;
             set.UpdateStates(Set.returnState);
+
+            StartCoroutine(SpawnDamageObj());
         }
 
         void UpdateFaz()
@@ -183,6 +213,35 @@ namespace SA
                 PerehMod();//поменяю в будущем на усл нанеения урона 
 
             UpdateFaz();
+        }
+
+        IEnumerator SpawnDamageObj()
+        {
+            GameObject tar = null;
+            while (true)
+            {
+                foreach(GameObject i in pullDamageObj)
+                {
+                    if (!i.activeInHierarchy)
+                    {
+                        tar = i;
+                        break;
+                    }
+                }
+
+                if(tar != null)
+                {
+                    DamageObj a = tar.GetComponent<DamageObj>();
+                    int ran = Random.Range(0, spawnDamageObjTransform.Count - 1);
+                    Transform pos = spawnDamageObjTransform[ran];
+                    a.spawnPos = pos;
+                    tar.SetActive(true);
+                    spawnDamageObjTransform.Remove(pos);
+                    tar = null;
+                }
+
+                yield return new WaitForSeconds(4f);
+            }
         }
     }
 }
