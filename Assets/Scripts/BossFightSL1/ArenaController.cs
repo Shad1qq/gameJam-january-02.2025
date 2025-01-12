@@ -10,6 +10,8 @@ namespace SA
     {
         [Header("audio")]
         public AudioClip perehodClip;
+        public AudioClip updateModClip;
+        public AudioClip mainClip;
 
         Volume render;
 
@@ -58,6 +60,8 @@ namespace SA
             render.weight = 5f;
 
             controlCh = FindObjectOfType<ChController>();
+            controlCh.PerehMod += PerehPref;
+
             player = FindObjectOfType<InputHandler>().gameObject;
             PerPulll p = FindObjectOfType<PerPulll>();
             p.arenaTry += UpdateArena;
@@ -100,14 +104,14 @@ namespace SA
             {
                 DamageObj a = i.GetComponent<DamageObj>();
                 a.contr = this;
-                a.DamageBoss += DamageBoss;
             }
         }
         void DamageBoss()
         {
 
         }//sss
-        void UpdateArena()
+
+        IEnumerator Updates()
         {
             controlCh.dopStrel.SetActive(true);
 
@@ -123,25 +127,9 @@ namespace SA
 
             han.minAngle = ang;
             han.maxAngle = maxAng;
+             
+            yield return new WaitForSeconds(1f);
 
-            Invoke(nameof(BlurArena), 1f);
-        }
-        IEnumerator Blur()
-        {
-            float progress = 0;
-
-            if (render.profile.TryGet<DepthOfField>(out var filmicTonemapper))
-                filmicTonemapper.active = true;
-            while(progress < 1)
-            {
-                progress += Time.deltaTime;
-                filmicTonemapper.focalLength.value = Mathf.Lerp(filmicTonemapper.focalLength.max, filmicTonemapper.focalLength.min, progress);
-                yield return null;
-            }
-            filmicTonemapper.active = false;
-        }
-        void BlurArena()
-        {
             boss[0].transform.position = positionBoss1and2[0].position;
             rukBoss[0].transform.position = positionRukStart[0].position;
             rukBoss[1].transform.position = positionRukStart[1].position;
@@ -163,10 +151,8 @@ namespace SA
             StartCoroutine(rukBoss[0].GetComponent<BossAnim>().Moved());
             StartCoroutine(rukBoss[1].GetComponent<BossAnim>().Moved());
 
-            Invoke(nameof(ArenaEndPrefu), 1f);
-        }
-        void ArenaEndPrefu()
-        {
+            yield return new WaitForSeconds(1f);
+
             StartCoroutine(controlCh.ChGoStrel());
 
             player.GetComponent<InputHandler>().states.run = true;
@@ -178,41 +164,103 @@ namespace SA
             set.statPosition = positionBoss1and2[0];
             set.UpdateStates(Set.pocoiBoss);
 
-            Invoke(nameof(ArenaStartFight), 1f);
-        }//начинаем опездюливание
-        void ArenaStartFight()
+            yield return new WaitForSeconds(1f);
+
+            MoveSet sets = rukBoss[0].GetComponent<MoveSet>();
+            sets.player = player;
+            sets.statPosition = statPos[0];
+            sets.statPosition.position += Vector3.up * 5f;
+            sets.UpdateStates(Set.hlopRuk);
+
+            sets = rukBoss[1].GetComponent<MoveSet>();
+            sets.player = player;
+            sets.statPosition = statPos[1];
+            sets.statPosition.position += Vector3.up * 5f;
+            sets.UpdateStates(Set.returnState);
+        }
+        void UpdateArena()
         {
-            MoveSet set = rukBoss[0].GetComponent<MoveSet>();
-            set.player = player;
-            set.statPosition = statPos[0];
-            set.statPosition.position += Vector3.up * 5f;
-            set.UpdateStates(Set.hlopRuk);
+            StartCoroutine(Updates());
+        }
+        IEnumerator Blur()
+        {
+            float progress = 0;
 
-            set = rukBoss[1].GetComponent<MoveSet>();
-            set.player = player;
-            set.statPosition = statPos[1];
-            set.statPosition.position += Vector3.up * 5f;
-            set.UpdateStates(Set.returnState);
-
-            StartCoroutine(SpawnDamageObj());
+            if (render.profile.TryGet<DepthOfField>(out var filmicTonemapper))
+                filmicTonemapper.active = true;
+            while(progress < 1)
+            {
+                progress += Time.deltaTime;
+                filmicTonemapper.focalLength.value = Mathf.Lerp(filmicTonemapper.focalLength.max, filmicTonemapper.focalLength.min, progress);
+                yield return null;
+            }
+            filmicTonemapper.active = false;
         }
 
         void UpdateFaz()
         {
             StartCoroutine(controlCh.ChGoStrel());
         }
-        void PerehMod()
-        {
-            controlCh.Ch2.SetActive(true);
-            controlCh.Ch.SetActive(false);
-            StartCoroutine(controlCh.ChGoStrel());
-        }
         void Pereh()
         {
-            if (!controlCh.Ch2.activeInHierarchy)
-                PerehMod();//помен€ю в будущем на усл нанеени€ урона 
-
             UpdateFaz();
+        }
+
+        DamageObj a;
+        void PerehPref()
+        {
+            controlCh.PerehMod -= PerehPref;
+
+            a = pullDamageObj[0].GetComponent<DamageObj>();
+            int ran = Random.Range(0, spawnDamageObjTransform.Count - 1);
+            Transform pos = spawnDamageObjTransform[ran];
+            a.spawnPos = pos;
+            pullDamageObj[0].SetActive(true);
+            a.DamageBoss += PerehMod;
+
+            spawnDamageObjTransform.Remove(pos);
+        }
+        void PerehMod()
+        {
+            a.DamageBoss -= PerehMod;
+            a = null;
+
+            MoveSet set = rukBoss[0].GetComponent<MoveSet>();
+            set.StopAllCoroutines();
+            set.gameObject.SetActive(false);
+
+            set = rukBoss[1].GetComponent<MoveSet>();
+            set.StopAllCoroutines();
+            set.gameObject.SetActive(false);
+
+            boss[0].SetActive(false);
+
+            StartCoroutine(PerehodPrefMod());
+        }
+        IEnumerator PerehodPrefMod()
+        {
+            AudioSource au = GetComponent<AudioSource>();
+            while (true)
+            {
+                yield return new WaitForSeconds(1f);
+
+                han.lockOnTransform = cameraPosition.transform;
+                han.lockOn = true;
+                han.vert = true;
+
+                yield return new WaitForSeconds(1f);
+
+                au.PlayOneShot(updateModClip);
+
+                //au.clip = mainClip;
+                //au.Play();
+
+                controlCh.Ch2.SetActive(true);
+                controlCh.Ch.SetActive(false);
+                //вызывать музло блюр и спавнить босса+его руки в новых позици€х запуска€ по новой им анимации
+                StartCoroutine(SpawnDamageObj());
+
+            }
         }
 
         IEnumerator SpawnDamageObj()

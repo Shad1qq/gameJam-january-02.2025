@@ -25,7 +25,7 @@ namespace SA
 
         internal StatManager states;
         internal CameraManager camManager;
-        RagdolController ragControl;
+        internal RagdolController ragControl;
         Pistol pis;
 
         float delta;
@@ -41,7 +41,7 @@ namespace SA
             camManager = CameraManager.singleton;
             camManager.Init(states);
 
-            states.Init();
+            states.Init(this);
 
             ragControl = states.activModel.AddComponent<RagdolController>();
             ragControl.Init(states.anim);

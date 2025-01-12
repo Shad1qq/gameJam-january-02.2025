@@ -19,14 +19,7 @@ public class RagdolController : MonoBehaviour
         foreach (var i in r)
             rid.Add(i);
 
-        foreach(Collider col in col)
-        {
-            col.isTrigger = true;
-        }
-        foreach(Rigidbody rb in rid)
-        {
-            rb.isKinematic = true;
-        }
+        RagdolFalse();
     }
     public void RagdolTrue()
     {
@@ -41,4 +34,18 @@ public class RagdolController : MonoBehaviour
             rb.isKinematic = false;
         }
     }
+    public void RagdolFalse()
+    {
+        anim.enabled = true;
+
+        foreach (Collider col in col)
+        {
+            col.isTrigger = true;
+        }
+        foreach (Rigidbody rb in rid)
+        {
+            rb.isKinematic = true;
+        }
+    }
+
 }
