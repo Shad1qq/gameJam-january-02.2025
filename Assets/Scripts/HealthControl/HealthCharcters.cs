@@ -51,7 +51,6 @@ public abstract class HealthCharcters : MonoBehaviour
     {
         isDead = true;
         DeadReaction?.Invoke();
-        gameObject.SetActive(false);
         Debug.Log($"{gameObject.name} погиб");
     }
 }

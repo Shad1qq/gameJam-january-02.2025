@@ -10,10 +10,23 @@ namespace SA
 
         public event Action DamageBoss;
 
+        public AudioClip audi;
+        AudioSource au;
+
         public ParticleSystem particle;
+        public ParticleSystem particleDead;
+
         internal ArenaController contr;
 
         Coroutine cor;
+        private void Start()
+        {
+            if(au == null)
+            {
+                au = gameObject.AddComponent<AudioSource>();
+                au.clip = audi;
+            }
+        }
         private void OnEnable()
         {
             cor = StartCoroutine(Part());
@@ -41,16 +54,20 @@ namespace SA
         }
         IEnumerator DamagePut()
         {
+            if(particleDead != null)
+                particleDead.Play();
+            au.Play();
+
             StopCoroutine(cor);
+
+            yield return new WaitForSeconds(0.2f);
 
             contr.spawnDamageObjTransform.Add(spawnPos);
             spawnPos = null;
 
-            yield return null;
-
             GetComponent<SphereCollider>().enabled = false;
-            gameObject.SetActive(false);
             DamageBoss?.Invoke();
+            gameObject.SetActive(false);
         }
     }
 }

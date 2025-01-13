@@ -22,6 +22,9 @@ public class ChController : MonoBehaviour
     public float rotationTime = 20f;
     float gr;
     public event Action Events;
+    public event Action PerehMod;
+
+    float time;
     private void FixedUpdate()
     {
         if (Ch2.activeInHierarchy)
@@ -60,6 +63,10 @@ public class ChController : MonoBehaviour
         int i = 0;
         while (i < rotationTime)
         {
+            time++;
+            if (time > 10f)
+                PerehMod?.Invoke();
+
             i++;
             UpStrel();
 

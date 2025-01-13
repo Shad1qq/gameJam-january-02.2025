@@ -43,6 +43,7 @@ namespace SA
         internal Animator anim;
         internal Rigidbody rigid;
         internal AnimatorHook a_hook;
+        internal InputHandler inp;
 
         internal float delta;
         internal LayerMask ignoreLayer;
@@ -58,9 +59,12 @@ namespace SA
         {
             DeadEvent?.Invoke();
             dead = true;
+            inp.ragControl.RagdolTrue();
         }
-        public void Init()
+        public void Init(InputHandler i)
         {
+            inp = i;
+
             DeadReaction += ReactionDead;
             DamageReaction += ReactDamage;
             SetupAnimator();
