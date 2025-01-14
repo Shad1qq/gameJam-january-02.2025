@@ -50,6 +50,7 @@ public class ChController : MonoBehaviour
         }
 
         au = GetComponent<AudioSource>();
+        au.volume = 0.3f;
 
         dopStrel.SetActive(false);
         strel.SetActive(false);

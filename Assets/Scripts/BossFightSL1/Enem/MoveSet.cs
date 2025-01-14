@@ -95,7 +95,7 @@ public class MoveSet : MonoBehaviour
     {
         float _time = 0;
 
-        while (_time < 2f)
+        while (_time < Random.Range(1f, 6f))
         {
             _time += Time.deltaTime;
 
@@ -135,6 +135,7 @@ public class MoveSet : MonoBehaviour
         }
         au.PlayOneShot(audioHlopok);
         partice.Play();
+        openCol.CloseCollider();
 
         /*foreach (var i in openCol.plit)
         {
@@ -143,7 +144,6 @@ public class MoveSet : MonoBehaviour
         }*/
 
         yield return new WaitForSeconds(1f);
-        openCol.CloseCollider();
 
         openCol.plit.Clear();
 
@@ -168,6 +168,7 @@ public class MoveSet : MonoBehaviour
         targetPos = new(startPos.x, targetPos.y, startPos.z);
         startPos = transform.position;
         time = 0;
+
         anim.SetBool("screb", true);
         openCol.OpenColloder();
 

@@ -55,6 +55,8 @@ namespace SA
 
             au = gameObject.AddComponent<AudioSource>();
             au.clip = mainClip;
+            au.loop = true;
+            au.volume = 0.3f;
             au.Play();
             au.Stop();
         }
@@ -284,8 +286,6 @@ namespace SA
             rukBoss[2].transform.rotation = Quaternion.Euler(rotate);
             rukBoss[3].transform.rotation = Quaternion.Euler(rotate);
 
-            han.minAngle = minStanAng;
-
             yield return new WaitForSeconds(1f);
 
             han.lockOnTransform = cameraPosition.transform;
@@ -293,6 +293,8 @@ namespace SA
             han.vert = true;
 
             yield return new WaitForSeconds(1f);
+
+            han.minAngle = minStanAng;
 
             StartCoroutine(Blur());
 
