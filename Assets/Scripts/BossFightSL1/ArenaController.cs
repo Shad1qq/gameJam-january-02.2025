@@ -43,12 +43,20 @@ namespace SA
         [Header("baground")]
         public GameObject bag;
 
+        float minStanAng;
+
         CameraManager han;
         ChController controlCh;
 
+        AudioSource au;
         private void Start()
         {
             StartCoroutine(Starts());
+
+            au = gameObject.AddComponent<AudioSource>();
+            au.clip = mainClip;
+            au.Play();
+            au.Stop();
         }
         private void OnDisable()
         {
@@ -125,6 +133,7 @@ namespace SA
 
             han.follofSpeed = 2f;
 
+            minStanAng = han.minAngle;
             han.minAngle = ang;
             han.maxAngle = maxAng;
              
@@ -234,33 +243,120 @@ namespace SA
             set.gameObject.SetActive(false);
 
             boss[0].SetActive(false);
+            boss[0].GetComponent<MoveSet>().StopAllCoroutines();
 
             StartCoroutine(PerehodPrefMod());
         }
         IEnumerator PerehodPrefMod()
         {
-            AudioSource au = GetComponent<AudioSource>();
-            while (true)
+            BossAnim rAn1 = rukBoss[0].GetComponent<BossAnim>();
+            BossAnim rAn2 = rukBoss[1].GetComponent<BossAnim>();
+            BossAnim rAn3 = rukBoss[2].GetComponent<BossAnim>();
+            BossAnim rAn4 = rukBoss[3].GetComponent<BossAnim>();
+
+            rAn1.targetPoint = statPos[2];
+            rAn2.targetPoint = statPos[3];
+            rAn3.targetPoint = statPos[4];
+            rAn4.targetPoint = statPos[5];
+
+            BossAnim an1 = boss[0].GetComponent<BossAnim>();
+            BossAnim an2 = boss[1].GetComponent<BossAnim>();
+
+            an1.targetPoint = targetPointStartBoss[1];
+            an2.targetPoint = targetPointStartBoss[2];
+
+            boss[0].transform.position = positionBoss1and2[1].position;
+            boss[1].transform.position = positionBoss1and2[2].position;
+
+            rukBoss[0].transform.position = positionRukStart[2].position;
+            rukBoss[1].transform.position = positionRukStart[3].position;
+            rukBoss[2].transform.position = positionRukStart[4].position;
+            rukBoss[3].transform.position = positionRukStart[5].position;
+
+            Vector3 rotate = rukBoss[0].transform.eulerAngles;
+            rotate.y = -90;
+            transform.rotation = Quaternion.Euler(rotate);
+
+            rukBoss[0].transform.rotation = Quaternion.Euler(rotate);
+            rukBoss[1].transform.rotation = Quaternion.Euler(rotate);
+            rotate.y = 90;
+
+            rukBoss[2].transform.rotation = Quaternion.Euler(rotate);
+            rukBoss[3].transform.rotation = Quaternion.Euler(rotate);
+
+            han.minAngle = minStanAng;
+
+            yield return new WaitForSeconds(1f);
+
+            han.lockOnTransform = cameraPosition.transform;
+            han.lockOn = true;
+            han.vert = true;
+
+            yield return new WaitForSeconds(1f);
+
+            StartCoroutine(Blur());
+
+            au.PlayOneShot(updateModClip);
+
+            controlCh.Ch2.SetActive(true);
+            controlCh.Ch.SetActive(false);
+
+            boss[0].SetActive(true);
+            boss[1].SetActive(true);
+
+            rukBoss[0].SetActive(true);
+            rukBoss[1].SetActive(true);
+            rukBoss[2].SetActive(true);
+            rukBoss[3].SetActive(true);
+
+            MoveSet set = boss[0].GetComponent<MoveSet>();
+            set.statPosition = positionBoss1and2[1];
+            set.UpdateStates(Set.pocoiBoss);
+
+            set = boss[1].GetComponent<MoveSet>();
+            set.player = player;
+            set.statPosition = positionBoss1and2[2];
+            set.UpdateStates(Set.pocoiBoss);
+
+            yield return new WaitForSeconds(1f);
+
+            han.minAngle = ang;
+            han.lockOnTransform = player.transform;
+            han.vert = false;
+
+            yield return new WaitForSeconds(1f);
+
+            boss[0].GetComponentInChildren<SkinnedMeshRenderer>().gameObject.layer = 12;
+            boss[1].GetComponentInChildren<SkinnedMeshRenderer>().gameObject.layer = 12;
+
+            StartCoroutine(an1.Moved());
+            StartCoroutine(an2.Moved());
+
+            StartCoroutine(rAn1.Moved());
+            StartCoroutine(rAn2.Moved());
+            StartCoroutine(rAn3.Moved());
+            StartCoroutine(rAn4.Moved());
+
+            yield return new WaitForSeconds(1f);
+
+            au.clip = mainClip;
+            au.Play();
+
+            yield return new WaitForSeconds(1f);
+
+            MoveSet sets = null;
+            for (int i = 0; i < rukBoss.Length; i++)
             {
-                yield return new WaitForSeconds(1f);
+                sets = rukBoss[i].GetComponent<MoveSet>();
+                sets.player = player;
+                sets.statPosition = statPos[i + 2];
+                sets.statPosition.position += Vector3.up * 5f;
+                sets.UpdateStates(sets.GetRandomNumber());
 
-                han.lockOnTransform = cameraPosition.transform;
-                han.lockOn = true;
-                han.vert = true;
-
-                yield return new WaitForSeconds(1f);
-
-                au.PlayOneShot(updateModClip);
-
-                //au.clip = mainClip;
-                //au.Play();
-
-                controlCh.Ch2.SetActive(true);
-                controlCh.Ch.SetActive(false);
-                //вызывать музло блюр и спавнить босса+его руки в новых позициях запуская по новой им анимации
-                StartCoroutine(SpawnDamageObj());
-
+                yield return null;
             }
+
+            StartCoroutine(SpawnDamageObj());
         }
 
         IEnumerator SpawnDamageObj()
@@ -288,7 +384,7 @@ namespace SA
                     tar = null;
                 }
 
-                yield return new WaitForSeconds(4f);
+                yield return new WaitForSeconds(Random.Range(7f, 12f));
             }
         }
     }

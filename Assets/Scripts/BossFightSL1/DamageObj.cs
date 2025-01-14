@@ -25,6 +25,7 @@ namespace SA
             {
                 au = gameObject.AddComponent<AudioSource>();
                 au.clip = audi;
+                au.loop = false;
             }
         }
         private void OnEnable()

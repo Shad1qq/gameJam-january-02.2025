@@ -18,8 +18,7 @@ public class MoveSet : MonoBehaviour
     float hor = 1f;
     float speed = 1f;
 
-    int[] numbers = { 4, 5}; // Массив чисел
-    float[] weights = { 1f, 1f}; // Массив весов вероятности для каждого числа
+    Set[] numStat = { Set.hlopRuk, Set.screbok}; // Массив чисел
 
     OpenAndCloseColliderDamage openCol;
     ControlPlits plitContr;
@@ -28,7 +27,7 @@ public class MoveSet : MonoBehaviour
     AudioSource audioSource;
 
     Animator anim => GetComponent<Animator>();
-    private void Start()
+    private void OnEnable()
     {
         if(GetComponent<Collider>() != null)
         {
@@ -104,7 +103,7 @@ public class MoveSet : MonoBehaviour
             attacer.transform.localPosition += new Vector3(x: 0, y: sin * hor, z: 0);
             yield return null;
         }
-        UpdateStates(GetStateByValue(GetRandomNumber()));
+        UpdateStates(GetRandomNumber());
     }
     public IEnumerator HlopocStatRuk()
     {
@@ -223,39 +222,10 @@ public class MoveSet : MonoBehaviour
         }
     }
 
-    int GetRandomNumber()
+    public Set GetRandomNumber()
     {
-        float totalWeight = 0f;
-        for (int i = 0; i < weights.Length; i++)
-        {
-            totalWeight += weights[i];
-        }
-
-        float randomValue = UnityEngine.Random.Range(0f, totalWeight);
-        float weightSum = 0f;
-        for (int i = 0; i < weights.Length; i++)
-        {
-            weightSum += weights[i];
-            if (randomValue <= weightSum)
-            {
-                weights[i] *= 0.5f; //Уменьшаем вес числа в два раза
-                return numbers[i];
-            }
-        }
-
-        return 0; //Возвращаем 0 если что то пошло не так
-    }
-    Set GetStateByValue(int value)
-    {
-        System.Array values = System.Enum.GetValues(typeof(Set));
-        foreach (Set state in values)
-        {
-            if ((int)state == value)
-            {
-                return state;
-            }
-        }
-        return Set.pocoiRuc;
+        int index = Random.Range(0, numStat.Length);
+        return numStat[index];
     }
 }
 

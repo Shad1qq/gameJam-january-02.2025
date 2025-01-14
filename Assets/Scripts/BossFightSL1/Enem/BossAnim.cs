@@ -20,5 +20,6 @@ public class BossAnim : MonoBehaviour
             transform.position = transform.position + Vector3.up * vert.Evaluate(progress);
             yield return null;
         }
+        progress = 0;
     }
 }
