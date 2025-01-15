@@ -3,6 +3,11 @@ using UnityEngine;
 
 public class MoveSet : MonoBehaviour
 {
+    [Header("атака гастер бластером")]
+    public float distance = 15f;
+    public GameObject particle;
+    public AudioClip audioGaster;
+
     [Header("хлопок")]
     public AudioClip audioHlopok;
     public ParticleSystem partice;
@@ -18,7 +23,7 @@ public class MoveSet : MonoBehaviour
     float hor = 1f;
     float speed = 1f;
 
-    Set[] numStat = { Set.hlopRuk, Set.screbok}; // Массив чисел
+    Set[] numStat = { Set.hlopRuk, Set.screbok, Set.gasterBluster }; // Массив чисел
 
     OpenAndCloseColliderDamage openCol;
     ControlPlits plitContr;
@@ -48,6 +53,8 @@ public class MoveSet : MonoBehaviour
             }
             audioSource.volume = 0.2f;
             audioSource.loop = true;
+
+            particle.SetActive(false);
         }
 
         attacer = gameObject;
@@ -195,6 +202,82 @@ public class MoveSet : MonoBehaviour
 
         UpdateStates(Set.returnState);
     }
+    public IEnumerator GasterBlusterRuk()
+    {
+        Quaternion root = transform.rotation;
+        Vector3 targetPos = CalculatePosition(player.transform.position, player.transform.forward, distance, Random.Range(0f, 360f));
+        Vector3 startPos = transform.position;
+
+        float time = 0;
+
+        while (time < 1f)
+        {
+            time += Time.deltaTime;
+
+            transform.position = Vector3.Lerp(startPos, targetPos, time);
+
+
+            Vector3 direction = player.transform.position - transform.position;
+            direction.y = 0; // Игнорируем вертикальную компоненту
+            if (direction != Vector3.zero)
+            {
+                // Вычисляем угол поворота
+                float angle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
+
+                angle += 90;
+                if (transform.Find("Armature").localScale.z < 0)
+                    angle -= 180;
+
+                // Создаем новый поворот с фиксированными значениями для X и Z
+                transform.rotation = Quaternion.Euler(0, angle, 90);
+            }
+
+            yield return new WaitForSeconds(0.01f);
+        }
+
+        time = 0;
+        anim.SetBool("Atack", true);
+        anim.Play("gota");
+
+        startPos = particle.transform.localScale;
+        targetPos = startPos;
+        targetPos.y = 0.1f;
+        targetPos.z = 0.1f;
+
+        yield return new WaitForSeconds(0.5f);
+
+        au.PlayOneShot(audioGaster);
+
+        particle.SetActive(true);
+        
+        while(time < 1f)
+        {
+            time += Time.deltaTime * 2f;
+
+            particle.transform.localScale = Vector3.Lerp(startPos, targetPos, time);
+            yield return null;
+        }
+        time = 0;
+
+        yield return new WaitForSeconds(0.2f);
+
+        startPos = particle.transform.localScale;
+        targetPos = new(startPos.x, 0f, 0f);
+
+        while (time < 1f)
+        {
+            time += Time.deltaTime * 3f;
+
+            particle.transform.localScale = Vector3.Lerp(startPos, targetPos, time);
+            yield return null;
+        }
+
+        anim.SetBool("Atack", false);
+        transform.rotation = root;
+        particle.SetActive(false);
+
+        UpdateStates(Set.returnState);
+    }
 
     public void UpdateStates(Set s)
     {
@@ -220,6 +303,9 @@ public class MoveSet : MonoBehaviour
             case Set.screbok:
                 StartCoroutine(ScrebokRuk());
                 break;
+            case Set.gasterBluster:
+                StartCoroutine(GasterBlusterRuk());
+                break;
         }
     }
 
@@ -227,6 +313,27 @@ public class MoveSet : MonoBehaviour
     {
         int index = Random.Range(0, numStat.Length);
         return numStat[index];
+    }
+    Vector3 CalculatePosition(Vector3 referencePosition, Vector3 referenceDirection, float distance, float angle)
+    {
+        // Преобразуем угол в радианы
+        float angleInRadians = angle * Mathf.Deg2Rad;
+
+        // Вычисляем смещение по оси X и Z
+        float offsetX = distance * Mathf.Cos(angleInRadians);
+        float offsetZ = distance * Mathf.Sin(angleInRadians);
+
+        // Создаем вектор смещения
+        Vector3 offset = new Vector3(offsetX, 0, offsetZ);
+
+        // Поворачиваем вектор смещения в направлении referenceDirection
+        Quaternion rotation = Quaternion.LookRotation(referenceDirection);
+        Vector3 rotatedOffset = rotation * offset;
+
+        // Вычисляем конечную позицию
+        Vector3 finalPosition = referencePosition + rotatedOffset;
+
+        return finalPosition;
     }
 }
 
@@ -236,5 +343,6 @@ public enum Set
     returnState,
     pocoiRuc,
     hlopRuk,
-    screbok
+    screbok,
+    gasterBluster
 }

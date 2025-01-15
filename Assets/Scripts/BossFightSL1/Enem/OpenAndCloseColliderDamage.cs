@@ -5,12 +5,15 @@ public class OpenAndCloseColliderDamage : HealthCharcters
 {
     BoxCollider colider => GetComponent<BoxCollider>();
 
-    public List<GameObject> plit = new();
+    internal List<GameObject> plit = new();
+
+    public bool isPullPlit;
     public int damage = 10;
 
     private void Start()
     {
-        colider.enabled = false;
+        if(!isPullPlit)
+            colider.enabled = false;
     }
     public void CloseCollider()
     {
@@ -26,7 +29,7 @@ public class OpenAndCloseColliderDamage : HealthCharcters
         {
             DealDamage(col.GetComponent<HealthCharcters>(), damage);
         }
-        if(col.CompareTag("Plit"))
+        if(col.CompareTag("Plit") && !isPullPlit)
         {
             plit.Add(col.gameObject);
         }
