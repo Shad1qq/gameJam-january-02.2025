@@ -1488,7 +1488,7 @@ GameObject:
   - component: {fileID: 134363319}
   m_Layer: 0
   m_Name: lefthand
-  m_TagString: Untagged
+  m_TagString: LeftHand
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3743,8 +3743,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef7caa59bfee330449642f032384ef45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  handSpeed: 6
-  lefthandSpeed: 6
+  startPoints: []
+  rightHand: {fileID: 0}
+  leftHand: {fileID: 0}
+  player: {fileID: 0}
+  randHand: 0
 --- !u!1001 &255743239
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8352,7 +8355,7 @@ GameObject:
   - component: {fileID: 645947626}
   m_Layer: 0
   m_Name: righthand
-  m_TagString: Untagged
+  m_TagString: RightHand
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

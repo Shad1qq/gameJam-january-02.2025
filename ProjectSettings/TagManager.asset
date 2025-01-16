@@ -13,6 +13,8 @@ TagManager:
   - Transform
   - Point
   - Boss
+  - RightHand
+  - LeftHand
   layers:
   - Default
   - TransparentFX
