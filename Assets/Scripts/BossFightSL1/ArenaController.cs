@@ -42,6 +42,9 @@ namespace SA
 
         [Header("baground")]
         public GameObject bag;
+        Material mat;
+        int helth = 100;
+        int damage = 10;
 
         float minStanAng;
 
@@ -59,6 +62,8 @@ namespace SA
             au.volume = 0.3f;
             au.Play();
             au.Stop();
+
+            mat = bag.GetComponent<Renderer>().material;
         }
         private void OnDisable()
         {
@@ -116,10 +121,22 @@ namespace SA
                 a.contr = this;
             }
         }
+
         void DamageBoss()
         {
+            helth -= damage;
 
-        }//sss
+            Color newColor = mat.color;
+            newColor.a -= 0.1f;
+            mat.color = newColor;
+
+            if (helth <= 0)
+                StartCoroutine(Dead());
+        }
+        IEnumerator Dead()
+        {
+            yield return null;
+        }
 
         IEnumerator Updates()
         {
@@ -290,7 +307,6 @@ namespace SA
 
             han.lockOnTransform = cameraPosition.transform;
             han.lockOn = true;
-            han.vert = true;
 
             yield return new WaitForSeconds(1f);
 
@@ -324,7 +340,6 @@ namespace SA
 
             han.minAngle = ang;
             han.lockOnTransform = player.transform;
-            han.vert = false;
 
             yield return new WaitForSeconds(1f);
 
@@ -356,6 +371,11 @@ namespace SA
                 sets.UpdateStates(sets.GetRandomNumber());
 
                 yield return null;
+            }
+
+            foreach (GameObject i in pullDamageObj)
+            {
+                i.GetComponent<DamageObj>().DamageBoss += DamageBoss;
             }
 
             StartCoroutine(SpawnDamageObj());
