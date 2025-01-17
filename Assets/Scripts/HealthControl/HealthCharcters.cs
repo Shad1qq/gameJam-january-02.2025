@@ -27,7 +27,11 @@ public abstract class HealthCharcters : MonoBehaviour
             target.TakeDamage(damage);
         }
     }
-
+    public void TickNoDamage(float i)
+    {
+        noDamageState = i;
+        timeDamage = Time.time;
+    }
     public void Health(int i)
     {
         _maxHealth = i;

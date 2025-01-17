@@ -438,7 +438,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   distance: 15
   particle: {fileID: 6709372086099081911}
-  audioGaster: {fileID: 8300000, guid: 286546f2612007047999a4c6ff2b07c4, type: 3}
+  audioGaster: {fileID: 8300000, guid: 04eaf1df4a255c240af84fea511ea3f7, type: 3}
   audioHlopok: {fileID: 8300000, guid: 286546f2612007047999a4c6ff2b07c4, type: 3}
   partice: {fileID: 3402927062279101766}
   audioScr: {fileID: 8300000, guid: b1410f320f6b0174ca5713499d8946f9, type: 3}

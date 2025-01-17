@@ -239,6 +239,8 @@ namespace SA
             else
                 a_hook.rm_multi = -5f;
 
+            TickNoDamage(0.2f);
+
             anim.SetFloat("vertical", v);
             anim.SetFloat("horizontal", h);
 
